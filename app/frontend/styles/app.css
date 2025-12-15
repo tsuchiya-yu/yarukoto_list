@@ -1,0 +1,66 @@
+:root {
+  color-scheme: light;
+  font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif;
+  line-height: 1.6;
+  background-color: #f7f9f3;
+  color: #0f172a;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f7f9f3;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.home-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.home-panel {
+  max-width: 640px;
+  padding: 3rem;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+}
+
+.home-panel h1 {
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1.2;
+  color: #14532d;
+}
+
+.home-lead {
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  color: #475569;
+}
+
+.home-message {
+  margin: 0;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.home-badge {
+  display: inline-flex;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #def7ec;
+  color: #047857;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin: 0;
+}

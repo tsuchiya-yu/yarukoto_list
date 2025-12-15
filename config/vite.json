@@ -1,0 +1,14 @@
+{
+  "all": {
+    "sourceCodeDir": "app/frontend",
+    "entrypointsDir": "entrypoints",
+    "publicOutputDir": "vite"
+  },
+  "development": {
+    "host": "vite",
+    "port": 5173,
+    "https": false
+  },
+  "test": {},
+  "production": {}
+}
