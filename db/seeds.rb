@@ -5,7 +5,7 @@ require "securerandom"
 ActiveRecord::Base.transaction do
   official_user = User.find_or_create_by!(email: "official@yarukoto.list") do |user|
     user.name = "運営チーム"
-    user.password_digest = SecureRandom.hex(16)
+    user.password = SecureRandom.base64(24)
   end
 
   template = Template.find_or_initialize_by(title: "はじめての引越し公式リスト")
@@ -48,9 +48,18 @@ ActiveRecord::Base.transaction do
   ]
 
   template.template_items.destroy_all
-  template_items.each_with_index do |item, index|
-    template.template_items.create!(item.merge(position: index))
+  timestamp = Time.current
+  template_item_attributes = template_items.each_with_index.map do |item, index|
+    {
+      template_id: template.id,
+      title: item[:title],
+      description: item[:description],
+      position: index,
+      created_at: timestamp,
+      updated_at: timestamp
+    }
   end
+  TemplateItem.insert_all(template_item_attributes) if template_item_attributes.any?
 
   reviewer_profiles = [
     {
@@ -70,7 +79,7 @@ ActiveRecord::Base.transaction do
   reviewer_profiles.each do |profile|
     reviewer = User.find_or_create_by!(email: profile[:email]) do |user|
       user.name = profile[:name]
-      user.password_digest = SecureRandom.hex(16)
+      user.password = SecureRandom.base64(24)
     end
 
     TemplateReview.find_or_initialize_by(template:, user: reviewer).tap do |review|
@@ -86,7 +95,7 @@ ActiveRecord::Base.transaction do
 
   demo_user = User.find_or_create_by!(email: "demo@yarukoto.list") do |user|
     user.name = "デモユーザー"
-    user.password_digest = SecureRandom.hex(16)
+    user.password = SecureRandom.base64(24)
   end
 
   user_list = UserList.find_or_initialize_by(user: demo_user, template: template)
@@ -101,7 +110,7 @@ ActiveRecord::Base.transaction do
       title: item.title,
       description: item.description,
       position: item.position,
-      completed: item.position.zero?
+      completed: false
     )
   end
 end
