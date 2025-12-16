@@ -1,0 +1,26 @@
+# See https://github.com/github/gitignore/blob/main/Rails.gitignore
+
+/.bundle
+/log/*
+/tmp/*
+/vendor/bundle
+/storage/*
+/public/assets
+/public/packs
+/node_modules
+/yarn-error.log
+.byebug_history
+.env
+.env.*
+!.env.example
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/coverage
+/pkg
+/config/master.key
+/config/credentials/*.key
+/config/credentials/*.yml.enc
+
+!/log/.keep
+!/tmp/.keep
+!/storage/.keep

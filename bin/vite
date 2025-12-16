@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+APP_ROOT = File.expand_path("..", __dir__)
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+Dir.chdir(APP_ROOT) do
+  exec("bundle", "exec", "vite", *ARGV)
+end

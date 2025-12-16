@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+bundle check || bundle install
+yarn install --check-files
+
+# If running the rails server then create or migrate the database
+rails_action=""
+if [ "${1}" = "./bin/rails" ]; then
+  rails_action="${2}"
+elif [ "${1}" = "bundle" ] && [ "${2}" = "exec" ] && [ "${3}" = "rails" ]; then
+  rails_action="${4}"
+fi
+
+if [ "${rails_action}" = "server" ] || [ "${rails_action}" = "s" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

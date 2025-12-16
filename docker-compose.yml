@@ -1,0 +1,68 @@
+version: "3.9"
+
+x-app-base: &app-base
+  build:
+    context: .
+  volumes:
+    - .:/app:cached
+
+services:
+  db:
+    image: postgres:16
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    <<: *app-base
+    command: ./bin/rails server -b 0.0.0.0 -p 3400
+    volumes:
+      - .:/app:cached
+      - bundle_web:/usr/local/bundle
+      - node_modules_web:/app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - vite
+      - ssr
+    ports:
+      - "3400:3400"
+    tty: true
+    stdin_open: true
+
+  vite:
+    <<: *app-base
+    command: ["yarn", "dev", "--host", "0.0.0.0", "--port", "5173"]
+    volumes:
+      - .:/app:cached
+      - bundle_vite:/usr/local/bundle
+      - node_modules_vite:/app/node_modules
+    environment:
+      NODE_ENV: development
+    ports:
+      - "5173:5173"
+
+  ssr:
+    <<: *app-base
+    command: ["yarn", "ssr:dev"]
+    volumes:
+      - .:/app:cached
+      - bundle_ssr:/usr/local/bundle
+      - node_modules_ssr:/app/node_modules
+    env_file:
+      - .env
+    ports:
+      - "13714:13714"
+
+volumes:
+  postgres:
+  bundle_web:
+  bundle_vite:
+  bundle_ssr:
+  node_modules_web:
+  node_modules_vite:
+  node_modules_ssr:

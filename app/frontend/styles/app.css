@@ -1,0 +1,74 @@
+:root {
+  color-scheme: light;
+  font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif;
+  line-height: 1.6;
+  --color-bg: #f7f9f3;
+  --color-text: #0f172a;
+  --color-surface: #ffffff;
+  --color-accent: #14532d;
+  --color-muted: #475569;
+  --color-badge-bg: #def7ec;
+  --color-badge-text: #047857;
+  --color-shadow: rgba(15, 23, 42, 0.12);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.home-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  box-sizing: border-box;
+}
+
+.home-panel {
+  max-width: 640px;
+  padding: 3rem;
+  border-radius: 24px;
+  background: var(--color-surface);
+  box-shadow: 0 20px 40px var(--color-shadow);
+}
+
+.home-panel h1 {
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1.2;
+  color: var(--color-accent);
+}
+
+.home-lead {
+  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  color: var(--color-muted);
+}
+
+.home-message {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.home-badge {
+  display: inline-flex;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--color-badge-bg);
+  color: var(--color-badge-text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
