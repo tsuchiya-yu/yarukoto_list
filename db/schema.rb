@@ -43,7 +43,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["template_id"], name: "index_template_reviews_on_template_id"
-    t.index ["template_id", "user_id"], name: "index_template_reviews_on_template_id_and_user_id", unique: true
     t.index ["user_id"], name: "index_template_reviews_on_user_id"
   end
 
@@ -90,7 +89,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_000000) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
   end
 
   add_foreign_key "template_items", "templates"
@@ -99,7 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_000000) do
   add_foreign_key "template_reviews", "templates"
   add_foreign_key "template_reviews", "users"
   add_foreign_key "templates", "users"
-  add_foreign_key "user_list_items", "template_items", on_delete: :nullify
+  add_foreign_key "user_list_items", "template_items"
   add_foreign_key "user_list_items", "user_lists"
   add_foreign_key "user_lists", "templates"
   add_foreign_key "user_lists", "users"

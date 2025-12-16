@@ -7,7 +7,7 @@ class CreateInitialSchema < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
-    add_index :users, :email, unique: true
+    add_index :users, "LOWER(email)", unique: true, name: "index_users_on_lower_email"
 
     create_table :templates do |t|
       t.references :user, null: false, foreign_key: true
