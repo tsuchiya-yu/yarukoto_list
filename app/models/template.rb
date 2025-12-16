@@ -10,6 +10,6 @@ class Template < ApplicationRecord
   validates :author_notes, length: { maximum: 500 }, allow_blank: true
 
   def average_rating
-    template_ratings.average(:score)&.to_f
+    template_ratings.average(:score).to_f
   end
 end

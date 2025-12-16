@@ -34,6 +34,8 @@ class CreateInitialSchema < ActiveRecord::Migration[7.1]
       t.text :content, null: false
 
       t.timestamps
+
+      t.index %i[template_id user_id], unique: true
     end
 
     create_table :template_ratings do |t|
