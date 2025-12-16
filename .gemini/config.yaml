@@ -1,0 +1,35 @@
+have_fun: false
+language: ja
+code_review:
+  disable: false
+  comment_severity_threshold: MEDIUM
+  max_review_comments: 15
+  auto_approve: false
+  pull_request_opened:
+    help: true
+    summary: true
+    code_review: true
+    generate_summary: true
+  pull_request_updated:
+    code_review: true
+    incremental_review: true
+  ignore_paths:
+    - "coverage/**"
+    - "node_modules/**"
+    - "public/**"
+    - "storage/**"
+    - "tmp/**"
+    - "log/**"
+    - "vendor/**"
+    - "ssr/dist/**"
+    - "dist/**"
+    - "*.snap"
+  focus_areas:
+    - correctness
+    - accessibility
+    - security
+    - performance
+  review_scope:
+    - code_quality
+    - architecture
+    - error_handling
