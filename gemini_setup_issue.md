@@ -73,14 +73,10 @@ code_review:
     - accessibility
     - security
     - performance
-    - ux_copy_consistency
   review_scope:
     - code_quality
     - architecture
-    - naming_conventions
     - error_handling
-    - seo
-    - test_coverage
 ```
 補足方針：
 - テストコードはアプリケーション品質に直結するためレビュー対象に含める。
@@ -146,7 +142,7 @@ code_review:
 ## スタイリング・UX
 - パステル調のグリーン/イエローを基調にし、余白多め・1画面1目的の原則に従う。
 - 「自分用にする」ボタンなど主要な操作は視認性・アクセシビリティ（aria属性、キーボード操作）を確保。
-- 削除ダイアログでは、確認文に「このやることを消しますか？」、実行ボタンに「消す」、キャンセルボタンに「そのままにする」という指定文言を使用してください。
+- 削除ダイアログでは、確認文に「このやることを消しますか？」、実行ボタンに「消す」、キャンセルボタンに「そのままにする」という指定文言を使用する。
 
 ## SEO / SSR
 - トップ / リスト一覧 / リスト詳細の SSR を維持し、meta 情報、OGP を設定。
