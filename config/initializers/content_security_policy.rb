@@ -6,7 +6,9 @@ Rails.application.configure do
     policy.font_src :self, :https, :data
     policy.img_src :self, :https, :data, :blob
     policy.object_src :none
-    policy.style_src :self, :https, :unsafe_inline
+    style_src = [:self, :https]
+    style_src << :unsafe_inline if Rails.env.development?
+    policy.style_src(*style_src)
 
     script_src = [:self, :https]
     connect_src = [:self, :https]
@@ -32,6 +34,6 @@ Rails.application.configure do
 
     # Generate session nonces for permitted importmap, inline scripts, and inline styles.
     config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-    config.content_security_policy_nonce_directives = %w[script-src]
+    config.content_security_policy_nonce_directives = %w[script-src style-src]
   end
 end

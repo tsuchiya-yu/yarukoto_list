@@ -77,7 +77,14 @@ Rails.application.configure do
   config.hosts << "vite"
   config.hosts << "ssr"
 
-  config.web_console.allowed_ips = "0.0.0.0/0"
+  default_web_console_ips = ["127.0.0.1", "::1", "172.16.0.0/12", "192.168.0.0/16"]
+  env_allowed_ips = ENV["WEB_CONSOLE_ALLOWED_IPS"]
+  config.web_console.allowed_ips =
+    if env_allowed_ips.present?
+      env_allowed_ips.split(",").filter_map { |ip| ip.strip.presence }
+    else
+      default_web_console_ips
+    end
 
   log_path = Rails.root.join("log/development.log")
   FileUtils.mkdir_p(log_path.dirname)

@@ -4,23 +4,6 @@ import { createInertiaApp } from "@inertiajs/react";
 import type React from "react";
 import { createRoot } from "react-dom/client";
 
-declare global {
-  interface Window {
-    $RefreshReg$: (type?: unknown) => void;
-    $RefreshSig$: () => (type: unknown) => unknown;
-    __vite_plugin_react_preamble_installed__?: boolean;
-  }
-}
-
-if (import.meta.hot && import.meta.env.DEV && typeof window !== "undefined") {
-  import("/@react-refresh").then((RefreshRuntime) => {
-    RefreshRuntime.default.injectIntoGlobalHook(window);
-    window.$RefreshReg$ = () => {};
-    window.$RefreshSig$ = () => (type: unknown) => type;
-    window.__vite_plugin_react_preamble_installed__ = true;
-  });
-}
-
 type PageModule = { default: React.ComponentType };
 
 const pages = import.meta.glob<PageModule>("../pages/**/*.tsx");

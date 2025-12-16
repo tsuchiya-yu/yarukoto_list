@@ -30,6 +30,11 @@ docker compose up web vite ssr
 - Vite (HMR): http://localhost:5173
 - Inertia SSR: http://localhost:13714
 
+### Web Console の許可IP
+
+開発環境では `config/environments/development.rb` で Web Console の許可IPを`127.0.0.1` や `172.16.0.0/12` などのプライベートレンジに限定しています。
+Docker など別のレンジからアクセスしたい場合は、カンマ区切りで指定した`WEB_CONSOLE_ALLOWED_IPS` 環境変数を設定してください。
+
 ## 主要コマンド
 
 - `docker compose run --rm web bin/rails db:migrate` : マイグレーション
