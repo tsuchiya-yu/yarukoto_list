@@ -1,9 +1,127 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# frozen_string_literal: true
+
+require "securerandom"
+
+ActiveRecord::Base.transaction do
+  official_user = User.find_or_create_by!(email: "official@yarukoto.list") do |user|
+    user.name = "運営チーム"
+    user.password = SecureRandom.base64(24)
+  end
+
+  template = Template.find_or_initialize_by(title: "はじめての引越し公式リスト")
+  template.assign_attributes(
+    user: official_user,
+    description: "初めての引越しでも迷わず進められるよう、申し込みから引越し当日までの流れを整理したリストです。",
+    author_notes: "ライフラインの解約・開栓手続きは地域で異なるため、最終的には公式サイトもご確認ください。"
+  )
+  template.save!
+
+  template_items = [
+    {
+      title: "引越し日と予算を決める",
+      description: "退去日と新居の入居可能日を合わせて、ざっくりしたスケジュールを固めます。"
+    },
+    {
+      title: "引越し業者を比較・予約",
+      description: "相見積もりを取り、希望日が空いている業者を確保します。"
+    },
+    {
+      title: "役所・ライフラインの解約手続き",
+      description: "電気・ガス・水道・インターネットの停止日を連絡します。"
+    },
+    {
+      title: "新居側のライフライン契約",
+      description: "電気・ガス・水道・ネット回線の開栓日を調整しておきます。"
+    },
+    {
+      title: "荷造りと不要品整理",
+      description: "段ボールや資材を揃えて、使わない部屋から順番に箱詰めします。"
+    },
+    {
+      title: "引越し前日の最終確認",
+      description: "貴重品・当日使う荷物を1つにまとめ、冷蔵庫の電源を切ります。"
+    },
+    {
+      title: "転入届などの各種手続き",
+      description: "住民票の移動や免許証の住所変更などを新居で済ませます。"
+    }
+  ]
+
+  template_item_ids = template.template_item_ids
+  if template_item_ids.any?
+    UserListItem.where(template_item_id: template_item_ids).update_all(template_item_id: nil)
+  end
+  template.template_items.delete_all
+  timestamp = Time.current
+  template_item_attributes = template_items.each_with_index.map do |item, index|
+    {
+      template_id: template.id,
+      title: item[:title],
+      description: item[:description],
+      position: index,
+      created_at: timestamp,
+      updated_at: timestamp
+    }
+  end
+  TemplateItem.insert_all(template_item_attributes) if template_item_attributes.any?
+
+  reviewer_profiles = [
+    {
+      email: "reviewer01@example.com",
+      name: "引越しベテラン",
+      review: "順番通りに進めたら抜け漏れなく完了できました。",
+      score: 5
+    },
+    {
+      email: "reviewer02@example.com",
+      name: "家族で引越し",
+      review: "ライフラインの手続きがまとまっていて助かりました。",
+      score: 4
+    }
+  ]
+
+  reviewer_profiles.each do |profile|
+    reviewer = User.find_or_create_by!(email: profile[:email]) do |user|
+      user.name = profile[:name]
+      user.password = SecureRandom.base64(24)
+    end
+
+    TemplateReview.find_or_initialize_by(template:, user: reviewer).tap do |review|
+      review.content = profile[:review]
+      review.save!
+    end
+
+    TemplateRating.find_or_initialize_by(template:, user: reviewer).tap do |rating|
+      rating.score = profile[:score]
+      rating.save!
+    end
+  end
+
+  demo_user = User.find_or_create_by!(email: "demo@yarukoto.list") do |user|
+    user.name = "デモユーザー"
+    user.password = SecureRandom.base64(24)
+  end
+
+  user_list = UserList.find_or_initialize_by(user: demo_user, template: template)
+  user_list.title = "#{template.title}（サンプル）"
+  user_list.description = "公式リストを自分用にコピーした例です。"
+  user_list.position = 0
+  user_list.save!
+
+  user_list.user_list_items.delete_all
+  user_list_item_timestamp = Time.current
+  user_list_item_attributes =
+    template.template_items.order(:position).map do |item|
+      {
+        user_list_id: user_list.id,
+        template_item_id: item.id,
+        title: item.title,
+        description: item.description,
+        position: item.position,
+        completed: false,
+        created_at: user_list_item_timestamp,
+        updated_at: user_list_item_timestamp
+      }
+    end
+  UserListItem.insert_all(user_list_item_attributes) if user_list_item_attributes.any?
+end

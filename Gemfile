@@ -7,6 +7,7 @@ gem "pg", "~> 1.5"
 gem "puma", ">= 5.0"
 gem "vite_rails"
 gem "inertia_rails"
+gem "bcrypt", "~> 3.1", ">= 3.1.20"
 
 gem "tzinfo-data", platforms: %i[windows jruby]
 gem "bootsnap", require: false
