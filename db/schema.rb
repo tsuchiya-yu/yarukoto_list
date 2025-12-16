@@ -98,7 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_000000) do
   add_foreign_key "template_ratings", "users"
   add_foreign_key "template_reviews", "templates"
   add_foreign_key "template_reviews", "users"
-  add_foreign_key "templates", "users", on_delete: :cascade
+  add_foreign_key "templates", "users"
   add_foreign_key "user_list_items", "template_items", on_delete: :nullify
   add_foreign_key "user_list_items", "user_lists"
   add_foreign_key "user_lists", "templates"

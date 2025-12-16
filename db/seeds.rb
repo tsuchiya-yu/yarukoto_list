@@ -108,7 +108,7 @@ ActiveRecord::Base.transaction do
   user_list.position = 0
   user_list.save!
 
-  user_list.user_list_items.destroy_all
+  user_list.user_list_items.delete_all
   user_list_item_timestamp = Time.current
   user_list_item_attributes =
     template.template_items.order(:position).map do |item|
