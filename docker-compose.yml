@@ -5,8 +5,6 @@ x-app-base: &app-base
     context: .
   volumes:
     - .:/app:cached
-    - bundle:/usr/local/bundle
-    - node_modules:/app/node_modules
 
 services:
   db:
@@ -21,6 +19,10 @@ services:
   web:
     <<: *app-base
     command: ./bin/rails server -b 0.0.0.0 -p 3400
+    volumes:
+      - .:/app:cached
+      - bundle_web:/usr/local/bundle
+      - node_modules_web:/app/node_modules
     env_file:
       - .env
     depends_on:
@@ -35,6 +37,10 @@ services:
   vite:
     <<: *app-base
     command: ["yarn", "dev", "--host", "0.0.0.0", "--port", "5173"]
+    volumes:
+      - .:/app:cached
+      - bundle_vite:/usr/local/bundle
+      - node_modules_vite:/app/node_modules
     environment:
       NODE_ENV: development
     ports:
@@ -43,6 +49,10 @@ services:
   ssr:
     <<: *app-base
     command: ["yarn", "ssr:dev"]
+    volumes:
+      - .:/app:cached
+      - bundle_ssr:/usr/local/bundle
+      - node_modules_ssr:/app/node_modules
     env_file:
       - .env
     ports:
@@ -50,5 +60,9 @@ services:
 
 volumes:
   postgres:
-  bundle:
-  node_modules:
+  bundle_web:
+  bundle_vite:
+  bundle_ssr:
+  node_modules_web:
+  node_modules_vite:
+  node_modules_ssr:

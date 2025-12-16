@@ -10,6 +10,7 @@
     "ssr:dev": "tsx watch ssr/server.tsx"
   },
   "dependencies": {
+    "@inertiajs/inertia": "^0.11.0",
     "@inertiajs/react": "^1.0.0",
     "@inertiajs/server": "^0.1.0",
     "fast-glob": "^3.3.2",

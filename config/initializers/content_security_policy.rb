@@ -1,3 +1,4 @@
+require "securerandom"
 require "uri"
 
 Rails.application.configure do
@@ -11,6 +12,7 @@ Rails.application.configure do
     policy.style_src(*style_src)
 
     script_src = [:self, :https]
+    script_src << "'unsafe-inline'" if Rails.env.development?
     connect_src = [:self, :https]
 
     if Rails.env.development?
@@ -32,8 +34,13 @@ Rails.application.configure do
     policy.script_src(*script_src)
     policy.connect_src(*connect_src)
 
-    # Generate session nonces for permitted importmap, inline scripts, and inline styles.
-    config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-    config.content_security_policy_nonce_directives = %w[script-src style-src]
+    if Rails.env.development?
+      config.content_security_policy_nonce_generator = nil
+      config.content_security_policy_nonce_directives = []
+    else
+      # Generate session nonces for permitted importmap, inline scripts, and inline styles.
+      config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
+      config.content_security_policy_nonce_directives = %w[script-src style-src]
+    end
   end
 end

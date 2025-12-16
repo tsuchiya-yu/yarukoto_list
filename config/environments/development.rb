@@ -77,15 +77,6 @@ Rails.application.configure do
   config.hosts << "vite"
   config.hosts << "ssr"
 
-  default_web_console_ips = ["127.0.0.1", "::1", "172.16.0.0/12", "192.168.0.0/16"]
-  env_allowed_ips = ENV["WEB_CONSOLE_ALLOWED_IPS"]
-  config.web_console.allowed_ips =
-    if env_allowed_ips.present?
-      env_allowed_ips.split(",").filter_map { |ip| ip.strip.presence }
-    else
-      default_web_console_ips
-    end
-
   log_path = Rails.root.join("log/development.log")
   FileUtils.mkdir_p(log_path.dirname)
   file_logger = ActiveSupport::Logger.new(log_path)
@@ -94,12 +85,6 @@ Rails.application.configure do
   stdout_logger = ActiveSupport::Logger.new($stdout)
   stdout_logger.formatter = config.log_formatter
 
-  file_logger.extend(Module.new do
-    define_method(:add) do |severity, message = nil, progname = nil, &block|
-      stdout_logger.add(severity, message, progname, &block)
-      super(severity, message, progname, &block)
-    end
-  end)
-
-  config.logger = ActiveSupport::TaggedLogging.new(file_logger)
+  broadcast_logger = ActiveSupport::BroadcastLogger.new(stdout_logger, file_logger)
+  config.logger = ActiveSupport::TaggedLogging.new(broadcast_logger)
 end

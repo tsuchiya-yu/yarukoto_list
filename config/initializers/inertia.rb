@@ -1,8 +1,10 @@
+require "digest"
+
 InertiaRails.configure do |config|
   config.version = lambda do
     Rails.cache.fetch("inertia-version", expires_in: 1.minute) do
       files = Dir[Rails.root.join("package.json")] + Dir[Rails.root.join("app/frontend/**/*")]
-      Digest::MD5.hexdigest(files.flat_map { |path| [path, File.mtime(path).to_i] }.join)
+      Digest::SHA256.hexdigest(files.flat_map { |path| [path, File.mtime(path).to_i] }.join)
     end
   end
 
