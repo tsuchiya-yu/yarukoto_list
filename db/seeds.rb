@@ -105,12 +105,19 @@ ActiveRecord::Base.transaction do
   user_list.save!
 
   user_list.user_list_items.destroy_all
-  template.template_items.order(:position).each do |item|
-    user_list.user_list_items.create!(
-      title: item.title,
-      description: item.description,
-      position: item.position,
-      completed: false
-    )
-  end
+  user_list_item_timestamp = Time.current
+  user_list_item_attributes =
+    template.template_items.order(:position).map do |item|
+      {
+        user_list_id: user_list.id,
+        template_item_id: item.id,
+        title: item.title,
+        description: item.description,
+        position: item.position,
+        completed: false,
+        created_at: user_list_item_timestamp,
+        updated_at: user_list_item_timestamp
+      }
+    end
+  UserListItem.insert_all(user_list_item_attributes) if user_list_item_attributes.any?
 end
