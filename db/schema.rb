@@ -43,6 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_18_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["template_id"], name: "index_template_reviews_on_template_id"
+    t.index ["template_id", "user_id"], name: "index_template_reviews_on_template_id_and_user_id", unique: true
     t.index ["user_id"], name: "index_template_reviews_on_user_id"
   end
 
