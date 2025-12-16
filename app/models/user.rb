@@ -18,6 +18,6 @@ class User < ApplicationRecord
   private
 
   def normalize_email
-    email&.downcase!
+    self.email = email&.downcase
   end
 end

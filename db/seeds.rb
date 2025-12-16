@@ -47,7 +47,11 @@ ActiveRecord::Base.transaction do
     }
   ]
 
-  template.template_items.destroy_all
+  template_item_ids = template.template_item_ids
+  if template_item_ids.any?
+    UserListItem.where(template_item_id: template_item_ids).update_all(template_item_id: nil)
+  end
+  template.template_items.delete_all
   timestamp = Time.current
   template_item_attributes = template_items.each_with_index.map do |item, index|
     {
