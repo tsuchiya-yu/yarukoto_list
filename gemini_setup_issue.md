@@ -40,12 +40,13 @@ Rails + Inertia.js + React で実装している「やることリスト」は�
 ## 参考情報: やることリスト向け設定案
 
 ### `.gemini/config.yaml`（案）
+重大度閾値は `MEDIUM` に設定し、LOW に分類される好み・軽微な指摘は抑制しつつも、保守性や品質に影響する指摘を確実に拾う。`ignore_paths` は生成物と巨大ディレクトリのみに絞り、テストコードや設定ファイルをレビュー対象に残す。
 ```yaml
 have_fun: false
 language: ja
 code_review:
   disable: false
-  comment_severity_threshold: HIGH
+  comment_severity_threshold: MEDIUM
   max_review_comments: 6
   auto_approve: false
   pull_request_opened:
@@ -66,12 +67,7 @@ code_review:
     - "vendor/**"
     - "ssr/dist/**"
     - "dist/**"
-    - "*.spec.ts"
-    - "*.spec.tsx"
-    - "*.test.ts"
-    - "*.test.tsx"
     - "*.snap"
-    - "*.config.*"
   focus_areas:
     - correctness
     - accessibility
@@ -85,6 +81,10 @@ code_review:
     - error_handling
     - seo
 ```
+補足方針：
+- テストコードはアプリケーション品質に直結するためレビュー対象に含める。
+- スナップショットのような自動生成物のみ除外し、設定ファイル（Vite / PostCSS など）もレビュー対象に残す。
+- Vite や PostCSS などの設定ファイルはプロダクトの挙動へ直結するため、原則レビュー対象とする。
 
 ### `.gemini/styleguide.md`（案）
 ```markdown
@@ -99,7 +99,30 @@ code_review:
 - 同じ論点の蒸し返しや未変更行への重複指摘は禁止。
 
 ## UI文言・コピー運用
-- docs/requirements.md の表記ルールを厳守する。「TODO」「タスク」「テンプレート」「実行」「登録」はユーザー向け文言に使用不可。
+- docs/requirements.md の表記ルールを前提とし、ユーザー向け UI 文言では曖昧・内部用語的な単語の使用を避ける。
+- 特に以下の単語は、**単独での使用を禁止**する。
+
+  - 登録
+  - 実行
+  - TODO
+  - タスク
+  - テンプレート
+
+- ただし、要件上・意味上必要な正式表現は例外として許容する。
+
+  - 許容例:
+    - 新規登録
+    - 会員登録
+  - 禁止例:
+    - ボタン文言としての「登録」「登録する」
+
+- 単独の「登録」が必要に見える場合は、文脈に応じて以下のように置き換える。
+  - 作成
+  - 追加
+  - 保存
+  - 申し込み
+
+- 本ルールの目的は、ユーザーにとって意味が曖昧な操作名を排除し、行動内容が直感的に伝わる UI を維持することである。
 - 固定文言（例：`自分用にする`、`やることを追加`、削除確認メッセージ）は変更しない。
 - 注意書きは要件定義の文面を改変せずに表示する。
 
