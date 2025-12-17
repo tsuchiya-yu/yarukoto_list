@@ -1,7 +1,7 @@
 module Public
   class HomeController < BaseController
     def index
-      featured_templates = Template.with_public_stats.includes(:user).order(Arel.sql("copies_count DESC"), updated_at: :desc).limit(3)
+      featured_templates = Template.with_public_stats.includes(:user).order_by_popularity.limit(3)
 
       render inertia: "Public/Home", props: {
         hero: hero_content,
