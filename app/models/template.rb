@@ -39,6 +39,7 @@ class Template < ApplicationRecord
     )
   }
 
+  # NOTE: These scopes rely on aggregated columns loaded by `with_public_stats`.
   scope :order_by_popularity, lambda {
     order(Arel.sql("copies_count DESC"), Arel.sql("ratings_count DESC"), updated_at: :desc)
   }

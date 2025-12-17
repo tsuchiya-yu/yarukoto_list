@@ -73,8 +73,8 @@ export default function Home({ hero, featured_templates, meta }: Props) {
               </a>
             </div>
             <ul className="hero-highlights">
-              {hero.highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
+              {hero.highlights.map((highlight, index) => (
+                <li key={index}>{highlight}</li>
               ))}
             </ul>
           </div>

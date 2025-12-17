@@ -17,11 +17,21 @@ type TemplateSummary = {
 type Filters = {
   sort: string;
   keyword: string;
+  page: number;
 };
 
 type SortOption = {
   value: string;
   label: string;
+};
+
+type Pagination = {
+  page: number;
+  per_page: number;
+  total_count: number;
+  total_pages: number;
+  has_prev: boolean;
+  has_next: boolean;
 };
 
 type Meta = {
@@ -35,6 +45,7 @@ type Meta = {
 type Props = {
   templates: TemplateSummary[];
   filters: Filters;
+  pagination: Pagination;
   sort_options: SortOption[];
   meta: Meta;
 };
@@ -44,7 +55,7 @@ const formatDate = (value: string) =>
 
 const formatScore = (value: number) => value.toFixed(1);
 
-export default function TemplateIndex({ templates, filters, sort_options, meta }: Props) {
+export default function TemplateIndex({ templates, filters, pagination, sort_options, meta }: Props) {
   const [keyword, setKeyword] = useState(filters.keyword ?? "");
 
   useEffect(() => {
@@ -57,7 +68,8 @@ export default function TemplateIndex({ templates, filters, sort_options, meta }
       "/lists",
       {
         sort: filters.sort,
-        q: keyword
+        q: keyword,
+        page: 1
       },
       { replace: true }
     );
@@ -68,7 +80,23 @@ export default function TemplateIndex({ templates, filters, sort_options, meta }
       "/lists",
       {
         sort: value,
-        q: keyword
+        q: keyword,
+        page: 1
+      },
+      {
+        replace: true,
+        preserveScroll: true
+      }
+    );
+  };
+
+  const handlePageChange = (page: number) => {
+    router.get(
+      "/lists",
+      {
+        sort: filters.sort,
+        q: keyword,
+        page
       },
       {
         replace: true,
@@ -78,11 +106,11 @@ export default function TemplateIndex({ templates, filters, sort_options, meta }
   };
 
   const totalLabel = useMemo(() => {
-    if (templates.length === 0) {
+    if (pagination.total_count === 0) {
       return "該当するやることリストは見つかりませんでした。";
     }
-    return `全${templates.length}件のやることリスト`;
-  }, [templates.length]);
+    return `全${pagination.total_count}件のやることリスト`;
+  }, [pagination.total_count]);
 
   return (
     <>
@@ -167,6 +195,28 @@ export default function TemplateIndex({ templates, filters, sort_options, meta }
         </div>
 
         {templates.length === 0 && <p className="empty-text">条件に一致するやることリストはありません。</p>}
+
+        <div className="pagination">
+          <button
+            type="button"
+            className="pagination-button"
+            onClick={() => handlePageChange(filters.page - 1)}
+            disabled={!pagination.has_prev}
+          >
+            前へ
+          </button>
+          <span className="pagination-status">
+            {filters.page} / {pagination.total_pages}
+          </span>
+          <button
+            type="button"
+            className="pagination-button"
+            onClick={() => handlePageChange(filters.page + 1)}
+            disabled={!pagination.has_next}
+          >
+            次へ
+          </button>
+        </div>
       </main>
     </>
   );
