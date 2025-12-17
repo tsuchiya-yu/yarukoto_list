@@ -17,7 +17,7 @@ module Public
       templates = apply_keyword_filter(templates, keyword)
       templates = order_for_sort(templates, sort)
 
-      total_count = templates.count(:all)
+      total_count = templates.reselect(nil).count
       total_pages = [((total_count.to_f / PER_PAGE).ceil), 1].max
       page = [page, total_pages].min
       paginated_templates = templates.offset((page - 1) * PER_PAGE).limit(PER_PAGE)
