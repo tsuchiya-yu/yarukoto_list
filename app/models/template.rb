@@ -1,7 +1,7 @@
 class Template < ApplicationRecord
   belongs_to :user
   has_many :template_items, -> { order(:position) }, dependent: :destroy
-  has_many :template_reviews, dependent: :destroy
+  has_many :template_reviews, -> { order(created_at: :desc) }, dependent: :destroy
   has_many :template_ratings, dependent: :destroy
   has_many :user_lists, dependent: :destroy
 
@@ -10,29 +10,31 @@ class Template < ApplicationRecord
   validates :author_notes, length: { maximum: 500 }, allow_blank: true
 
   scope :with_public_stats, lambda {
-    select(
+    joins(
+      <<~SQL.squish
+        LEFT JOIN (
+          SELECT template_id, AVG(score) AS average_score, COUNT(*) AS ratings_count
+          FROM template_ratings
+          GROUP BY template_id
+        ) rating_stats ON rating_stats.template_id = templates.id
+        LEFT JOIN (
+          SELECT template_id, COUNT(*) AS reviews_count
+          FROM template_reviews
+          GROUP BY template_id
+        ) review_stats ON review_stats.template_id = templates.id
+        LEFT JOIN (
+          SELECT template_id, COUNT(*) AS copies_count
+          FROM user_lists
+          GROUP BY template_id
+        ) copy_stats ON copy_stats.template_id = templates.id
+      SQL
+    ).select(
       <<~SQL.squish
         templates.*,
-        (
-          SELECT COALESCE(AVG(template_ratings.score), 0)
-          FROM template_ratings
-          WHERE template_ratings.template_id = templates.id
-        ) AS average_score,
-        (
-          SELECT COUNT(*)
-          FROM template_ratings
-          WHERE template_ratings.template_id = templates.id
-        ) AS ratings_count,
-        (
-          SELECT COUNT(*)
-          FROM template_reviews
-          WHERE template_reviews.template_id = templates.id
-        ) AS reviews_count,
-        (
-          SELECT COUNT(*)
-          FROM user_lists
-          WHERE user_lists.template_id = templates.id
-        ) AS copies_count
+        COALESCE(rating_stats.average_score, 0) AS average_score,
+        COALESCE(rating_stats.ratings_count, 0) AS ratings_count,
+        COALESCE(review_stats.reviews_count, 0) AS reviews_count,
+        COALESCE(copy_stats.copies_count, 0) AS copies_count
       SQL
     )
   }
@@ -42,18 +44,18 @@ class Template < ApplicationRecord
   end
 
   def public_average_score
-    (self[:average_score] || average_rating).to_f
+    self[:average_score].to_f
   end
 
   def public_ratings_count
-    (self[:ratings_count] || template_ratings.size).to_i
+    self[:ratings_count].to_i
   end
 
   def public_reviews_count
-    (self[:reviews_count] || template_reviews.size).to_i
+    self[:reviews_count].to_i
   end
 
   def public_copies_count
-    (self[:copies_count] || user_lists.size).to_i
+    self[:copies_count].to_i
   end
 end

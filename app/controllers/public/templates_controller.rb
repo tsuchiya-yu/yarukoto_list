@@ -71,7 +71,7 @@ module Public
     end
 
     def template_detail(template)
-      reviews = template.template_reviews.sort_by(&:created_at).reverse
+      reviews = template.template_reviews
       {
         id: template.id,
         title: template.title,
