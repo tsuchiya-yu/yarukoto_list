@@ -1,5 +1,7 @@
 import { Head } from "@inertiajs/react";
 
+import { formatDate, formatScore } from "@/lib/formatters";
+
 type TimelineItem = {
   id: number;
   title: string;
@@ -50,11 +52,6 @@ type Props = {
   fixed_notice: string;
   meta: Meta;
 };
-
-const formatDate = (value: string) =>
-  new Date(value).toLocaleDateString("ja-JP", { year: "numeric", month: "short", day: "numeric" });
-
-const formatScore = (value: number) => value.toFixed(1);
 
 export default function TemplateShow({ template, fixed_notice, meta }: Props) {
   return (

@@ -1,5 +1,7 @@
 import { Head } from "@inertiajs/react";
 
+import { formatDate, formatScore } from "@/lib/formatters";
+
 type TemplateSummary = {
   id: number;
   title: string;
@@ -42,11 +44,6 @@ type Props = {
   meta: Meta;
 };
 
-const formatDate = (value: string) =>
-  new Date(value).toLocaleDateString("ja-JP", { year: "numeric", month: "short", day: "numeric" });
-
-const formatScore = (value: number) => value.toFixed(1);
-
 export default function Home({ hero, featured_templates, meta }: Props) {
   return (
     <>
@@ -73,8 +70,8 @@ export default function Home({ hero, featured_templates, meta }: Props) {
               </a>
             </div>
             <ul className="hero-highlights">
-              {hero.highlights.map((highlight, index) => (
-                <li key={index}>{highlight}</li>
+              {hero.highlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
               ))}
             </ul>
           </div>

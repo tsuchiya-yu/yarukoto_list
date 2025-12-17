@@ -34,7 +34,12 @@ module Public
         sort_options: SORT_OPTIONS.map { |value, label| { value: value, label: label } },
         meta: default_meta_tags(
           title: "公開やることリスト一覧",
-          description: meta_description_for_list(sort:, keyword:)
+          description: helpers.public_list_meta_description(
+            sort: sort,
+            keyword: keyword,
+            sort_options: SORT_OPTIONS,
+            default_sort: DEFAULT_SORT
+          )
         )
       }
     end
@@ -51,7 +56,7 @@ module Public
         fixed_notice: fixed_notice_text,
         meta: default_meta_tags(
           title: template.title,
-          description: meta_description_for_template(template)
+          description: helpers.public_template_meta_description(template)
         )
       }
     end
@@ -115,20 +120,6 @@ module Public
           href: "/login"
         }
       }
-    end
-
-    def meta_description_for_list(sort:, keyword:)
-      sort_label = SORT_OPTIONS.fetch(sort, SORT_OPTIONS[DEFAULT_SORT])
-      base = "引越しのやることリストを#{sort_label}で並べ替えて確認できます。"
-      if keyword.present?
-        %(#{base} キーワード「#{keyword}」に合致するリストだけを表示中です。)
-      else
-        %(#{base} 気になるリストを開いて詳細とレビューをチェックできます。)
-      end
-    end
-
-    def meta_description_for_template(template)
-      view_context.truncate(template.description, length: 120)
     end
 
     def normalized_page_param

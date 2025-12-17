@@ -2,6 +2,8 @@ import { Head, router } from "@inertiajs/react";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 
+import { formatDate, formatScore } from "@/lib/formatters";
+
 type TemplateSummary = {
   id: number;
   title: string;
@@ -49,11 +51,6 @@ type Props = {
   sort_options: SortOption[];
   meta: Meta;
 };
-
-const formatDate = (value: string) =>
-  new Date(value).toLocaleDateString("ja-JP", { year: "numeric", month: "short", day: "numeric" });
-
-const formatScore = (value: number) => value.toFixed(1);
 
 export default function TemplateIndex({ templates, filters, pagination, sort_options, meta }: Props) {
   const [keyword, setKeyword] = useState(filters.keyword ?? "");
