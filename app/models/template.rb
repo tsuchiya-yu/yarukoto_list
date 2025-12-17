@@ -39,6 +39,16 @@ class Template < ApplicationRecord
     )
   }
 
+  scope :order_by_popularity, lambda {
+    order(Arel.sql("copies_count DESC"), Arel.sql("ratings_count DESC"), updated_at: :desc)
+  }
+
+  scope :order_by_rating, lambda {
+    order(Arel.sql("average_score DESC"), Arel.sql("ratings_count DESC"), updated_at: :desc)
+  }
+
+  scope :order_by_newest, -> { order(created_at: :desc) }
+
   def average_rating
     template_ratings.average(:score)&.to_f || 0.0
   end

@@ -62,11 +62,11 @@ module Public
     def order_for_sort(relation, sort)
       case sort
       when "rating"
-        relation.order(Arel.sql("average_score DESC"), Arel.sql("ratings_count DESC"), updated_at: :desc)
+        relation.order_by_rating
       when "newest"
-        relation.order(created_at: :desc)
+        relation.order_by_newest
       else
-        relation.order(Arel.sql("copies_count DESC"), Arel.sql("ratings_count DESC"), updated_at: :desc)
+        relation.order_by_popularity
       end
     end
 

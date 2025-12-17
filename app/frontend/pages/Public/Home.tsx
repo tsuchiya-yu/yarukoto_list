@@ -102,6 +102,7 @@ export default function Home({ hero, featured_templates, meta }: Props) {
                 <div className="template-card__stats">
                   <span className="template-card__score">★ {formatScore(template.average_score)}</span>
                   <span className="template-card__reviews">レビュー {template.reviews_count}件</span>
+                  <span className="template-card__copies">自分用 {template.copies_count}件</span>
                 </div>
                 <h3>{template.title}</h3>
                 <p className="template-card__description">{template.description}</p>
