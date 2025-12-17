@@ -3,5 +3,10 @@ Rails.application.routes.draw do
   get "/.well-known/appspecific/com.chrome.devtools.json",
       to: proc { [204, { "Content-Type" => "application/json" }, ["{}"]] }
 
-  root "home#index"
+  scope module: :public do
+    get "/lists", to: "templates#index", as: :public_templates
+    get "/lists/:id", to: "templates#show", as: :public_template
+  end
+
+  root "public/home#index"
 end
