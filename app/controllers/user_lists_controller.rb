@@ -1,13 +1,14 @@
 class UserListsController < ApplicationController
   def create
     template = Template.includes(:template_items).find(params[:template_id])
-    (_, already_exists) =
+    already_exists =
       UserList.transaction do
-        existing_list = current_user.user_lists.lock.find_by(template: template)
-        if existing_list
-          [existing_list, true]
+        lists = current_user.user_lists.lock
+        if lists.exists?(template: template)
+          true
         else
-          [copy_template_for(template), false]
+          copy_template_for(template)
+          false
         end
       end
 

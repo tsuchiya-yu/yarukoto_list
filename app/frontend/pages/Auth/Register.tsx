@@ -41,6 +41,13 @@ export default function Register({ meta, form }: Props) {
     setData("user", { ...data.user, [name]: value });
   };
 
+  const renderErrors = (messages?: string[]) =>
+    messages?.map((message, index) => (
+      <p key={`${message}-${index}`} className="input-error">
+        {message}
+      </p>
+    ));
+
   return (
     <>
       <Seo meta={meta} />
@@ -61,7 +68,7 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {errors.name && <p className="input-error">{errors.name}</p>}
+              {renderErrors(errors.name)}
             </div>
             <div className="form-field">
               <label htmlFor="register-email">メールアドレス</label>
@@ -74,7 +81,7 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {errors.email && <p className="input-error">{errors.email}</p>}
+              {renderErrors(errors.email)}
             </div>
             <div className="form-field">
               <label htmlFor="register-password">パスワード</label>
@@ -87,7 +94,7 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {errors.password && <p className="input-error">{errors.password}</p>}
+              {renderErrors(errors.password)}
             </div>
             <div className="form-field">
               <label htmlFor="register-password-confirmation">パスワード（確認）</label>
@@ -100,7 +107,7 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {errors.password_confirmation && <p className="input-error">{errors.password_confirmation}</p>}
+              {renderErrors(errors.password_confirmation)}
             </div>
             <div className="auth-actions">
               <button type="submit" className="btn-primary" disabled={processing}>
