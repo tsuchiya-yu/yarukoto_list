@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   def store_location_for_login
     return unless request.get?
     return if request.xhr?
-    return if [login_path, register_path].include?(request.path)
+    return if [login_path, signup_path].include?(request.path)
 
     session[:return_to] = request.fullpath
   end
@@ -32,7 +32,6 @@ class ApplicationController < ActionController::Base
     pending_path = session[:return_to]
     reset_session
     session[:user_id] = user.id
-    @current_user = user
     pending_path.presence || root_path
   end
 

@@ -7,12 +7,13 @@ class RegistrationsController < ApplicationController
   end
 
   def create
-    user = User.new(registration_params)
+    permitted = registration_params
+    user = User.new(permitted)
     if user.save
       redirect_to establish_session_for(user), notice: "アカウントを作成しました"
     else
       render inertia: "Auth/Register",
-             props: register_props(form: registration_form_params, errors: formatted_errors(user)),
+             props: register_props(form: permitted.slice(:name, :email), errors: formatted_errors(user)),
              status: :unprocessable_entity
     end
   end
@@ -40,7 +41,4 @@ class RegistrationsController < ApplicationController
     record.errors.messages.transform_values(&:first)
   end
 
-  def registration_form_params
-    registration_params.slice(:name, :email)
-  end
 end

@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
 
-  get "/signup", to: "registrations#new", as: :register
-  post "/signup", to: "registrations#create", as: :register_submit
+  get "/signup", to: "registrations#new", as: :signup
+  post "/signup", to: "registrations#create"
 
   resources :user_lists, only: :create
 
