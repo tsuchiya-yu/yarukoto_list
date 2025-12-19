@@ -1,24 +1,16 @@
 class UserListsController < ApplicationController
   def create
     template = Template.includes(:template_items).find(params[:template_id])
-    already_exists =
-      UserList.transaction do
-        lists = current_user.user_lists.lock
-        if lists.exists?(template: template)
-          true
-        else
-          copy_template_for(template)
-          false
-        end
+    UserList.transaction do
+      lists = current_user.user_lists.lock
+      if lists.exists?(template: template)
+        return redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
       end
 
-    notice =
-      if already_exists
-        "このリストはすでに自分用に追加済みです"
-      else
-        "自分用リストを作成しました"
-      end
-    redirect_to public_template_path(template), notice: notice
+      copy_template_for(template)
+    end
+
+    redirect_to public_template_path(template), notice: "自分用リストを作成しました"
   rescue ActiveRecord::RecordInvalid
     redirect_to public_template_path(template), alert: "自分用へのコピーに失敗しました"
   rescue ActiveRecord::RecordNotFound
