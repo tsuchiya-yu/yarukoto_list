@@ -21,7 +21,7 @@ export function SiteHeader() {
               <Link href="/login" className="btn-secondary btn-compact">
                 ログインする
               </Link>
-              <Link href="/register" className="btn-primary btn-compact">
+              <Link href="/signup" className="btn-primary btn-compact">
                 はじめて使う
               </Link>
             </div>

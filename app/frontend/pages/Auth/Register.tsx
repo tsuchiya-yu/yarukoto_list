@@ -38,7 +38,7 @@ export default function Register({ meta, form }: Props) {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    post("/register");
+    post("/signup");
   };
 
   return (

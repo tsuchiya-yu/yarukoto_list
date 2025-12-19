@@ -376,6 +376,16 @@ a {
   margin: 0;
 }
 
+.form-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
 .auth-actions {
   display: flex;
   flex-direction: column;

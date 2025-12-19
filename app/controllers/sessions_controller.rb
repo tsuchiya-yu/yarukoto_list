@@ -7,7 +7,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(email: session_params[:email].to_s.downcase)
+    email = session_params[:email]
+    user = email.present? ? User.find_by(email: email.downcase) : nil
     if user&.authenticate(session_params[:password])
       redirect_to establish_session_for(user), notice: "ログインしました"
     else
@@ -29,7 +30,7 @@ class SessionsController < ApplicationController
   private
 
   def session_params
-    params.permit(:email, :password)
+    params.require(:session).permit(:email, :password)
   end
 
   def login_props(form: {}, errors: {})

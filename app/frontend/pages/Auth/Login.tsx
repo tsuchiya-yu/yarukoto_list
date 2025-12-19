@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from "@inertiajs/react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import type { PageProps } from "@/types/page";
@@ -21,9 +21,17 @@ type Props = PageProps<{
 
 export default function Login({ meta, form }: Props) {
   const { data, setData, post, processing, errors } = useForm({
-    email: form.email ?? "",
-    password: ""
+    session: {
+      email: form.email ?? "",
+      password: ""
+    }
   });
+
+  const updateSessionField = (field: "email" | "password") => {
+    return (event: ChangeEvent<HTMLInputElement>) => {
+      setData("session", { ...data.session, [field]: event.target.value });
+    };
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,8 +61,8 @@ export default function Login({ meta, form }: Props) {
                 type="email"
                 name="email"
                 autoComplete="email"
-                value={data.email}
-                onChange={(event) => setData("email", event.target.value)}
+                value={data.session.email}
+                onChange={updateSessionField("email")}
                 required
               />
               {errors.email && <p className="input-error">{errors.email}</p>}
@@ -66,8 +74,8 @@ export default function Login({ meta, form }: Props) {
                 type="password"
                 name="password"
                 autoComplete="current-password"
-                value={data.password}
-                onChange={(event) => setData("password", event.target.value)}
+                value={data.session.password}
+                onChange={updateSessionField("password")}
                 required
               />
               {errors.password && <p className="input-error">{errors.password}</p>}
@@ -79,7 +87,7 @@ export default function Login({ meta, form }: Props) {
             </div>
           </form>
           <p className="auth-links">
-            はじめての方は <Link href="/register">はじめて使う</Link>
+            はじめての方は <Link href="/signup">はじめて使う</Link>
           </p>
         </section>
       </PublicShell>

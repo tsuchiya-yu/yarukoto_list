@@ -26,7 +26,7 @@ module Public
           label: "公開リストを見る"
         },
         secondary_cta: {
-          href: "/register",
+          href: "/signup",
           label: "はじめて使う"
         },
         highlights: [
