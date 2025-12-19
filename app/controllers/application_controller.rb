@@ -36,6 +36,22 @@ class ApplicationController < ActionController::Base
     pending_path.presence || root_path
   end
 
+  def redirect_if_authenticated
+    return unless current_user
+
+    redirect_to root_path, notice: "すでにログイン済みです"
+  end
+
+  def meta_payload(title, description)
+    {
+      title: title,
+      description: description,
+      og_title: "#{title} | やることリスト",
+      og_description: description,
+      og_image: "/apple-touch-icon.png"
+    }
+  end
+
   def user_payload(user)
     {
       id: user.id,

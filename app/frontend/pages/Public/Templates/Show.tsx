@@ -58,11 +58,10 @@ type Props = PageProps<{
 export default function TemplateShow({ template, fixed_notice, meta }: Props) {
   const { auth } = usePage<PageProps>().props;
   const isLoggedIn = Boolean(auth?.user);
-  const ctaLabel = isLoggedIn ? "自分用にする" : template.cta.button_label;
   const ctaMessage = isLoggedIn
-    ? "ログイン中です。このリストを自分用にコピーする準備が整っています。"
+    ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
     : template.cta.message;
-  const ctaHref = isLoggedIn ? "/lists" : template.cta.href;
+  const copyHref = `/templates/${template.id}/copy`;
 
   return (
     <>
@@ -141,9 +140,15 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
             <h2>自分用にする</h2>
             <p>{ctaMessage}</p>
           </div>
-          <Link className="btn-primary" href={ctaHref}>
-            {ctaLabel}
-          </Link>
+          {isLoggedIn ? (
+            <Link href={copyHref} method="post" as="button" type="button" className="btn-primary" preserveScroll>
+              自分用にする
+            </Link>
+          ) : (
+            <Link className="btn-primary" href={template.cta.href}>
+              {template.cta.button_label}
+            </Link>
+          )}
         </section>
 
         <section className="fixed-notice">

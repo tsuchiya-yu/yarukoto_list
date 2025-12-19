@@ -25,7 +25,7 @@ class RegistrationsController < ApplicationController
 
   def register_props(form: {}, errors: {})
     description =
-      "メールアドレスとパスワードを設定して、やることリストを自分用に管理できるようにします。登録後はログイン済みの状態でヘッダーに表示されます。"
+      "メールアドレスとパスワードを設定して、やることリストを自分用に管理できるようにします。アカウント作成後はログイン済みの状態でヘッダーに表示されます。"
     {
       meta: meta_payload("はじめて使う", description),
       form: {
@@ -36,23 +36,7 @@ class RegistrationsController < ApplicationController
     }
   end
 
-  def meta_payload(title, description)
-    {
-      title: title,
-      description: description,
-      og_title: "#{title} | やることリスト",
-      og_description: description,
-      og_image: "/apple-touch-icon.png"
-    }
-  end
-
   def formatted_errors(record)
     record.errors.to_hash(true).transform_values { |messages| Array(messages).first }
-  end
-
-  def redirect_if_authenticated
-    return unless current_user
-
-    redirect_to root_path, notice: "すでにログイン済みです"
   end
 end

@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   get "/register", to: "registrations#new"
   post "/register", to: "registrations#create"
 
+  post "/templates/:template_id/copy", to: "user_lists#create", as: :copy_template
+
   scope module: :public do
     get "/lists", to: "templates#index", as: :public_templates
     get "/lists/:id", to: "templates#show", as: :public_template
