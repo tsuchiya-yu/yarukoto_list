@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by("LOWER(email) = ?", session_params[:email].to_s.downcase)
+    user = User.find_by(email: session_params[:email].to_s.downcase)
     if user&.authenticate(session_params[:password])
       redirect_to establish_session_for(user), notice: "ログインしました"
     else
