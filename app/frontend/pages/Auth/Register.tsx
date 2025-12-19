@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from "@inertiajs/react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import type { PageProps } from "@/types/page";
@@ -22,11 +22,19 @@ type Props = PageProps<{
 
 export default function Register({ meta, form }: Props) {
   const { data, setData, post, processing, errors } = useForm({
-    name: form.name ?? "",
-    email: form.email ?? "",
-    password: "",
-    password_confirmation: ""
+    user: {
+      name: form.name ?? "",
+      email: form.email ?? "",
+      password: "",
+      password_confirmation: ""
+    }
   });
+
+  const updateUserField = (field: "name" | "email" | "password" | "password_confirmation") => {
+    return (event: ChangeEvent<HTMLInputElement>) => {
+      setData("user", { ...data.user, [field]: event.target.value });
+    };
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,8 +63,8 @@ export default function Register({ meta, form }: Props) {
                 type="text"
                 name="name"
                 autoComplete="name"
-                value={data.name}
-                onChange={(event) => setData("name", event.target.value)}
+                value={data.user.name}
+                onChange={updateUserField("name")}
                 required
               />
               {errors.name && <p className="input-error">{errors.name}</p>}
@@ -68,8 +76,8 @@ export default function Register({ meta, form }: Props) {
                 type="email"
                 name="email"
                 autoComplete="email"
-                value={data.email}
-                onChange={(event) => setData("email", event.target.value)}
+                value={data.user.email}
+                onChange={updateUserField("email")}
                 required
               />
               {errors.email && <p className="input-error">{errors.email}</p>}
@@ -81,8 +89,8 @@ export default function Register({ meta, form }: Props) {
                 type="password"
                 name="password"
                 autoComplete="new-password"
-                value={data.password}
-                onChange={(event) => setData("password", event.target.value)}
+                value={data.user.password}
+                onChange={updateUserField("password")}
                 required
               />
               {errors.password && <p className="input-error">{errors.password}</p>}
@@ -94,8 +102,8 @@ export default function Register({ meta, form }: Props) {
                 type="password"
                 name="password_confirmation"
                 autoComplete="new-password"
-                value={data.password_confirmation}
-                onChange={(event) => setData("password_confirmation", event.target.value)}
+                value={data.user.password_confirmation}
+                onChange={updateUserField("password_confirmation")}
                 required
               />
               {errors.password_confirmation && <p className="input-error">{errors.password_confirmation}</p>}

@@ -20,7 +20,7 @@ class RegistrationsController < ApplicationController
   private
 
   def registration_params
-    params.permit(:name, :email, :password, :password_confirmation)
+    params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
 
   def register_props(form: {}, errors: {})
