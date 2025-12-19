@@ -492,6 +492,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@playwright/mcp@^0.0.52":
+  version "0.0.52"
+  resolved "https://registry.yarnpkg.com/@playwright/mcp/-/mcp-0.0.52.tgz#aaf76132bc393696e7a10a073c1b6ad31fd7e44c"
+  integrity sha512-QS32pUWEkAh649iSLMqZ42xaRJlDl4vpzJHG4lq3hYTK9ANruUE/d8E2JIBZPlifSm/cnvCGVY9Bh7mUXumbXw==
+  dependencies:
+    playwright "1.58.0-alpha-2025-12-11"
+    playwright-core "1.58.0-alpha-2025-12-11"
+
 "@rolldown/pluginutils@1.0.0-beta.27":
   version "1.0.0-beta.27"
   resolved "https://registry.yarnpkg.com/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz#47d2bf4cef6d470b22f5831b420f8964e0bf755f"
@@ -922,6 +930,11 @@ form-data@^4.0.4:
     hasown "^2.0.2"
     mime-types "^2.1.12"
 
+fsevents@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
+
 fsevents@~2.3.2, fsevents@~2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
@@ -1114,6 +1127,20 @@ picomatch@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
+
+playwright-core@1.58.0-alpha-2025-12-11:
+  version "1.58.0-alpha-2025-12-11"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.58.0-alpha-2025-12-11.tgz#29558f430cba8f2753a1ae31cd890b76420ebd49"
+  integrity sha512-8c8vO4BMIGmEac13g4hxzWNCP/pGdRLhysUvcANU0uxH5UcN/DeFQ5RP+6NIK732u/KpLjCqI27TWdr1xgKb3A==
+
+playwright@1.58.0-alpha-2025-12-11:
+  version "1.58.0-alpha-2025-12-11"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.58.0-alpha-2025-12-11.tgz#d33864cc97cf58ef02d1f76cb03ac8a19e473010"
+  integrity sha512-wNAnyMpt4VZCy9wryVXphHfHgpoD2LRO/h4Bl8GDuvzIpvx6uU/TkRmC5/91feROZ1ng1tTjY6oTVdqIKt7uGQ==
+  dependencies:
+    playwright-core "1.58.0-alpha-2025-12-11"
+  optionalDependencies:
+    fsevents "2.3.2"
 
 postcss@^8.4.43:
   version "8.5.6"

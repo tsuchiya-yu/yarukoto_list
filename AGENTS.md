@@ -48,3 +48,26 @@
 - MVPスコープ外の機能追加（通知/期日/共有/課金/AI等）
 - 不要な依存関係の大量追加
 - UI表記ルールの破壊（TODO/タスク/テンプレート等の語をユーザー向け表示に使う）
+
+## Codex向け Playwright MCP 操作手順
+本リポジトリでは `@playwright/mcp` を導入済み。Codex からブラウザ操作を行う際は以下を守ること。
+
+1. **開発サーバーを起動**  
+   `docker compose up web vite ssr` を実行し、`http://localhost:3400` へアクセス可能にする（必要に応じて `curl` で疎通確認）。
+2. **MCP サーバーを起動**  
+   `yarn mcp:playwright` を実行し、`mcp/playwright.config.json` の設定（Chromium / localhost 制限）で Playwright MCP を立ち上げる。終了時は Ctrl+C で停止。
+3. **Codex CLI への登録**  
+   `~/.codex/config.toml` に以下を追記し、Codex からサーバーを呼び出せるようにする。
+   ```
+   [mcp_servers.playwright]
+   command = "yarn"
+   args = ["mcp:playwright"]
+   ```
+4. **操作時の注意**  
+   - `browser_navigate` などの MCP ツールは、既に起動済みの `yarn mcp:playwright` プロセスを利用する。  
+   - UI 文言・禁止ワードのチェックは docs/requirements.md / このファイルの規約を必ず参照。  
+   - ブラウザ操作ログやスクリーンショットは `tmp/playwright-mcp/` に保存されるため、不要になったら適宜削除してよい。
+
+## GitHub Issue / PR 作成時の注意
+- `gh` コマンドなどで Issue / PR を作成・編集する際は、本文をファイルに書き出してから `--body-file` を利用し、改行が `\n` として扱われる事態を防ぐ。  
+- 直接引数で渡す場合もヒアドキュメントや `printf` ではなく、ファイル経由で安全に Markdown を反映させること。

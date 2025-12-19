@@ -47,6 +47,26 @@ Docker など別のレンジからアクセスしたい場合は、カンマ区�
 - `app/frontend/pages` : Inertiaページ（React + TypeScript）
 - `ssr/server.tsx` : `@inertiajs/server` を使ったSSRサーバー
 
+## Playwright MCP でのブラウザ操作
+
+自動ブラウザ操作を行うため、`@playwright/mcp` を devDependencies に追加し、Codex などの MCP クライアントから呼び出せる設定を整備しています。
+
+- 設定ファイル: `mcp/playwright.config.json`  
+  - Chromium をヘッドレスでない状態で起動し、`localhost` 以外には接続しないよう制限。  
+  - 取得したスナップショットやトレースは `tmp/playwright-mcp` に保存されます。
+- 起動コマンド: `yarn mcp:playwright`  
+  - `mcp-server-playwright --config mcp/playwright.config.json` をラップしています。
+- MCP クライアントへの登録例（Codex CLI の場合）:
+
+  ```toml
+  # ~/.codex/config.toml
+  [mcp_servers.playwright]
+  command = "yarn"
+  args = ["mcp:playwright"]
+  ```
+
+コマンドを起動したままにしておくと、MCP 対応エージェントから Playwright の各種ツール（`browser_navigate` や `browser_click` など）を利用できます。README の上記設定を必要に応じて調整してください。
+
 ## ドキュメント
 
 - `docs/requirements.md` : 要件定義
