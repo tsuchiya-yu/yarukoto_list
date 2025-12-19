@@ -47,6 +47,16 @@ Docker など別のレンジからアクセスしたい場合は、カンマ区�
 - `app/frontend/pages` : Inertiaページ（React + TypeScript）
 - `ssr/server.tsx` : `@inertiajs/server` を使ったSSRサーバー
 
+### Makefile ヘルパー
+
+- `make dev` : `docker compose up web vite ssr`
+- `make dev-mcp` : `yarn mcp:playwright`
+- `make up` : `bin/dev_with_mcp`（docker compose + MCP を同時起動）
+- `make down` : `docker compose down`
+- `make shell` : `docker compose run --rm web bash`
+- `make bundle` : `docker compose run --rm web bundle install`
+- `make db-migrate` : `docker compose run --rm web bin/rails db:migrate`
+
 ## Playwright MCP でのブラウザ操作
 
 自動ブラウザ操作を行うため、`@playwright/mcp` を devDependencies に追加し、Codex などの MCP クライアントから呼び出せる設定を整備しています。

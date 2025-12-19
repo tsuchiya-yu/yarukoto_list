@@ -53,9 +53,10 @@
 本リポジトリでは `@playwright/mcp` を導入済み。Codex からブラウザ操作を行う際は以下を守ること。
 
 1. **開発サーバーを起動**  
-   `docker compose up web vite ssr` を実行し、`http://localhost:3400` へアクセス可能にする（必要に応じて `curl` で疎通確認）。
+   `make dev`（従来どおり `docker compose up web vite ssr` でも可）を実行し、`http://localhost:3400` にアクセスできる状態にする。
 2. **MCP サーバーを起動**  
-   `yarn mcp:playwright` を実行し、`mcp/playwright.config.json` の設定（Chromium / localhost 制限）で Playwright MCP を立ち上げる。終了時は Ctrl+C で停止。
+   `make dev-mcp`（=`yarn mcp:playwright`）で Playwright MCP を立ち上げる。終了時は Ctrl+C で停止。  
+   開発サーバーと MCP を同時に立ち上げる場合は `make up` を利用すると 1 コマンドで起動できる。
 3. **Codex CLI への登録**  
    `~/.codex/config.toml` に以下を追記し、Codex からサーバーを呼び出せるようにする。
    ```
@@ -67,6 +68,9 @@
    - `browser_navigate` などの MCP ツールは、既に起動済みの `yarn mcp:playwright` プロセスを利用する。  
    - UI 文言・禁止ワードのチェックは docs/requirements.md / このファイルの規約を必ず参照。  
    - ブラウザ操作ログやスクリーンショットは `tmp/playwright-mcp/` に保存されるため、不要になったら適宜削除してよい。
+
+補足：
+- `make shell` を実行すると `web` コンテナに入り、必要なコマンドを直接実行できる。作業が終わったら `exit` で抜けること。
 
 ## GitHub Issue / PR 作成時の注意
 - `gh` コマンドなどで Issue / PR を作成・編集する際は、本文をファイルに書き出してから `--body-file` を利用し、改行が `\n` として扱われる事態を防ぐ。  
