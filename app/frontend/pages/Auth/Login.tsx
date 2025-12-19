@@ -45,6 +45,7 @@ export default function Login({ meta, form }: Props) {
           <h1>{meta.title}</h1>
           <p className="auth-description">{meta.description}</p>
           <form onSubmit={handleSubmit}>
+            {errors.base && <p className="form-error">{errors.base}</p>}
             <div className="form-field">
               <label htmlFor="login-email">メールアドレス</label>
               <input
