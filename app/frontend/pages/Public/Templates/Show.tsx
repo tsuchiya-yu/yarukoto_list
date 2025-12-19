@@ -2,6 +2,7 @@ import { Head, Link, usePage } from "@inertiajs/react";
 
 import { PublicShell } from "@/components/PublicShell";
 import { formatDate, formatScore } from "@/lib/formatters";
+import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
 
 type TimelineItem = {
@@ -61,7 +62,6 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
   const ctaMessage = isLoggedIn
     ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
     : template.cta.message;
-  const copyEndpoint = "/user_lists";
 
   return (
     <>
@@ -142,7 +142,7 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
           </div>
           {isLoggedIn ? (
             <Link
-              href={copyEndpoint}
+              href={routes.userLists()}
               data={{ template_id: template.id }}
               method="post"
               as="button"
