@@ -26,8 +26,8 @@ module Public
           label: "公開リストを見る"
         },
         secondary_cta: {
-          href: "/login",
-          label: "ログインする"
+          href: "/register",
+          label: "はじめて使う"
         },
         highlights: [
           "人気のやることリストをそのまま確認",

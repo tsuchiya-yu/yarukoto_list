@@ -1,6 +1,8 @@
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 
+import { PublicShell } from "@/components/PublicShell";
 import { formatDate, formatScore } from "@/lib/formatters";
+import type { PageProps } from "@/types/page";
 
 type TemplateSummary = {
   id: number;
@@ -38,11 +40,11 @@ type Meta = {
   og_image: string;
 };
 
-type Props = {
+type Props = PageProps<{
   hero: HeroContent;
   featured_templates: TemplateSummary[];
   meta: Meta;
-};
+}>;
 
 export default function Home({ hero, featured_templates, meta }: Props) {
   return (
@@ -54,7 +56,7 @@ export default function Home({ hero, featured_templates, meta }: Props) {
         <meta property="og:image" content={meta.og_image} />
         <meta property="twitter:card" content="summary_large_image" />
       </Head>
-      <main className="public-shell">
+      <PublicShell>
         <section className="public-hero">
           <div className="public-hero__copy">
             <p className="hero-badge">{hero.badge}</p>
@@ -62,12 +64,12 @@ export default function Home({ hero, featured_templates, meta }: Props) {
             <p className="hero-lead">{hero.lead}</p>
             <p className="hero-subcopy">{hero.subcopy}</p>
             <div className="hero-actions">
-              <a className="btn-primary" href={hero.cta.href}>
+              <Link className="btn-primary" href={hero.cta.href}>
                 {hero.cta.label}
-              </a>
-              <a className="btn-secondary" href={hero.secondary_cta.href}>
+              </Link>
+              <Link className="btn-secondary" href={hero.secondary_cta.href}>
                 {hero.secondary_cta.label}
-              </a>
+              </Link>
             </div>
             <ul className="hero-highlights">
               {hero.highlights.map((highlight) => (
@@ -89,9 +91,9 @@ export default function Home({ hero, featured_templates, meta }: Props) {
               <p className="section-label">公式リスト</p>
               <h2>今チェックされているやること</h2>
             </div>
-            <a className="link-more" href="/lists">
+            <Link className="link-more" href="/lists">
               一覧を見る
-            </a>
+            </Link>
           </header>
           <div className="template-grid">
             {featured_templates.map((template) => (
@@ -114,9 +116,9 @@ export default function Home({ hero, featured_templates, meta }: Props) {
                   </div>
                 </dl>
                 <div className="template-card__actions">
-                  <a href={`/lists/${template.id}`} className="btn-ghost">
+                  <Link href={`/lists/${template.id}`} className="btn-ghost">
                     このリストを見る
-                  </a>
+                  </Link>
                 </div>
               </article>
             ))}
@@ -125,7 +127,7 @@ export default function Home({ hero, featured_templates, meta }: Props) {
             <p className="empty-text">公開中のやることリストはまだありません。</p>
           )}
         </section>
-      </main>
+      </PublicShell>
     </>
   );
 }

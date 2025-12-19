@@ -1,6 +1,8 @@
-import { Head } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 
+import { PublicShell } from "@/components/PublicShell";
 import { formatDate, formatScore } from "@/lib/formatters";
+import type { PageProps } from "@/types/page";
 
 type TimelineItem = {
   id: number;
@@ -47,13 +49,21 @@ type Meta = {
   og_image: string;
 };
 
-type Props = {
+type Props = PageProps<{
   template: TemplateDetail;
   fixed_notice: string;
   meta: Meta;
-};
+}>;
 
 export default function TemplateShow({ template, fixed_notice, meta }: Props) {
+  const { auth } = usePage<PageProps>().props;
+  const isLoggedIn = Boolean(auth?.user);
+  const ctaLabel = isLoggedIn ? "自分用にする" : template.cta.button_label;
+  const ctaMessage = isLoggedIn
+    ? "ログイン中です。このリストを自分用にコピーする準備が整っています。"
+    : template.cta.message;
+  const ctaHref = isLoggedIn ? "/lists" : template.cta.href;
+
   return (
     <>
       <Head title={meta.title}>
@@ -63,7 +73,7 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
         <meta property="og:image" content={meta.og_image} />
         <meta property="twitter:card" content="summary_large_image" />
       </Head>
-      <main className="public-shell detail-shell">
+      <PublicShell className="detail-shell">
         <article className="detail-hero">
           <p className="section-label">公開リスト</p>
           <h1>{template.title}</h1>
@@ -129,17 +139,17 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
         <section className="cta-panel">
           <div>
             <h2>自分用にする</h2>
-            <p>{template.cta.message}</p>
+            <p>{ctaMessage}</p>
           </div>
-          <a className="btn-primary" href={template.cta.href}>
-            {template.cta.button_label}
-          </a>
+          <Link className="btn-primary" href={ctaHref}>
+            {ctaLabel}
+          </Link>
         </section>
 
         <section className="fixed-notice">
           <p>{fixed_notice}</p>
         </section>
-      </main>
+      </PublicShell>
     </>
   );
 }
