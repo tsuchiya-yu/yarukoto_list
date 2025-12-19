@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from "@inertiajs/react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import type { PageProps } from "@/types/page";
@@ -32,6 +32,11 @@ export default function Login({ meta, form }: Props) {
     post("/login");
   };
 
+  const handleSessionChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setData("session", { ...data.session, [name]: value });
+  };
+
   return (
     <>
       <Head title={meta.title}>
@@ -56,7 +61,7 @@ export default function Login({ meta, form }: Props) {
                 name="email"
                 autoComplete="email"
                 value={data.session.email}
-                onChange={(event) => setData("session", { ...data.session, email: event.target.value })}
+                onChange={handleSessionChange}
                 required
               />
               {errors.email && <p className="input-error">{errors.email}</p>}
@@ -69,7 +74,7 @@ export default function Login({ meta, form }: Props) {
                 name="password"
                 autoComplete="current-password"
                 value={data.session.password}
-                onChange={(event) => setData("session", { ...data.session, password: event.target.value })}
+                onChange={handleSessionChange}
                 required
               />
               {errors.password && <p className="input-error">{errors.password}</p>}

@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   def create
     permitted = session_params
     email = permitted[:email]&.downcase
-    user = email && User.find_by(email: email)
+    user = User.find_by(email: email) if email
     if user&.authenticate(permitted[:password])
       redirect_to establish_session_for(user), notice: "ログインしました"
     else
