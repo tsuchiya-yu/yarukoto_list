@@ -1,4 +1,5 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { useState } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import { Seo } from "@/components/Seo";
@@ -60,6 +61,7 @@ type Props = PageProps<{
 export default function TemplateShow({ template, fixed_notice, meta }: Props) {
   const { auth } = usePage<PageProps>().props;
   const isLoggedIn = Boolean(auth?.user);
+  const [isCopying, setIsCopying] = useState(false);
   const ctaMessage = isLoggedIn
     ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
     : template.cta.message;
@@ -136,17 +138,24 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
             <p>{ctaMessage}</p>
           </div>
           {isLoggedIn ? (
-            <Link
-              href={routes.userLists()}
-              data={{ template_id: template.id }}
-              method="post"
-              as="button"
+            <button
               type="button"
               className="btn-primary"
-              preserveScroll
+              disabled={isCopying}
+              onClick={() => {
+                setIsCopying(true);
+                router.post(
+                  routes.userLists(),
+                  { template_id: template.id },
+                  {
+                    preserveScroll: true,
+                    onFinish: () => setIsCopying(false)
+                  }
+                );
+              }}
             >
-              自分用にする
-            </Link>
+              {isCopying ? "コピー中..." : "自分用にする"}
+            </button>
           ) : (
             <Link className="btn-primary" href={template.cta.href}>
               {template.cta.button_label}
