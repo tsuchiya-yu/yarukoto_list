@@ -1,0 +1,30 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": false
+    }
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "allowedHosts": [
+      "localhost",
+      "127.0.0.1"
+    ]
+  },
+  "snapshot": {
+    "mode": "incremental"
+  },
+  "console": {
+    "level": "info"
+  },
+  "timeouts": {
+    "action": 5000,
+    "navigation": 60000
+  },
+  "outputDir": "tmp/playwright-mcp",
+  "capabilities": [
+    "core"
+  ],
+  "imageResponses": "allow"
+}

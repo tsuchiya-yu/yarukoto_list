@@ -47,6 +47,36 @@ Docker など別のレンジからアクセスしたい場合は、カンマ区�
 - `app/frontend/pages` : Inertiaページ（React + TypeScript）
 - `ssr/server.tsx` : `@inertiajs/server` を使ったSSRサーバー
 
+### Makefile ヘルパー
+
+- `make dev` : `docker compose up web vite ssr`
+- `make dev-mcp` : `yarn mcp:playwright`
+- `make up` : `bin/dev_with_mcp`（docker compose + MCP を同時起動）
+- `make down` : `docker compose down`
+- `make shell` : `docker compose run --rm web bash`
+- `make bundle` : `docker compose run --rm web bundle install`
+- `make db-migrate` : `docker compose run --rm web bin/rails db:migrate`
+
+## Playwright MCP でのブラウザ操作
+
+自動ブラウザ操作を行うため、`@playwright/mcp` を devDependencies に追加し、Codex などの MCP クライアントから呼び出せる設定を整備しています。
+
+- 設定ファイル: `mcp/playwright.config.json`  
+  - Chromium をヘッドレスでない状態で起動し、`localhost` 以外には接続しないよう制限。  
+  - 取得したスナップショットやトレースは `tmp/playwright-mcp` に保存されます。
+- 起動コマンド: `yarn mcp:playwright`  
+  - `mcp-server-playwright --config mcp/playwright.config.json` をラップしています。
+- MCP クライアントへの登録例（Codex CLI の場合）:
+
+  ```toml
+  # ~/.codex/config.toml
+  [mcp_servers.playwright]
+  command = "yarn"
+  args = ["mcp:playwright"]
+  ```
+
+コマンドを起動したままにしておくと、MCP 対応エージェントから Playwright の各種ツール（`browser_navigate` や `browser_click` など）を利用できます。ご利用中の環境に合わせて、上記の設定例を参考に `~/.codex/config.toml` などの MCP クライアント設定を調整してください。
+
 ## ドキュメント
 
 - `docs/requirements.md` : 要件定義

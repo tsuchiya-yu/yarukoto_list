@@ -3,6 +3,7 @@
 /.bundle
 /log/*
 /tmp/*
+/tmp/playwright-mcp/
 /vendor/bundle
 /storage/*
 /public/assets
