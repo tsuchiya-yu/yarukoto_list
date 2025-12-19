@@ -61,7 +61,7 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
   const ctaMessage = isLoggedIn
     ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
     : template.cta.message;
-  const copyHref = `/templates/${template.id}/copy`;
+  const copyEndpoint = "/user_lists";
 
   return (
     <>
@@ -141,7 +141,15 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
             <p>{ctaMessage}</p>
           </div>
           {isLoggedIn ? (
-            <Link href={copyHref} method="post" as="button" type="button" className="btn-primary" preserveScroll>
+            <Link
+              href={copyEndpoint}
+              data={{ template_id: template.id }}
+              method="post"
+              as="button"
+              type="button"
+              className="btn-primary"
+              preserveScroll
+            >
               自分用にする
             </Link>
           ) : (

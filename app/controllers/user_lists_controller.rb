@@ -28,15 +28,21 @@ class UserListsController < ApplicationController
           position: next_position
         )
 
-      template.template_items.each do |item|
-        user_list.user_list_items.create!(
-          template_item: item,
-          title: item.title,
-          description: item.description,
-          position: item.position,
-          completed: false
-        )
-      end
+      timestamp = Time.current
+      items_attributes =
+        template.template_items.map do |item|
+          {
+            user_list_id: user_list.id,
+            template_item_id: item.id,
+            title: item.title,
+            description: item.description,
+            position: item.position,
+            completed: false,
+            created_at: timestamp,
+            updated_at: timestamp
+          }
+        end
+      UserListItem.insert_all!(items_attributes) if items_attributes.any?
 
       user_list
     end
