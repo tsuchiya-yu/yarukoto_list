@@ -102,7 +102,7 @@ export default function Register({ meta, form }: Props) {
             </div>
             <div className="auth-actions">
               <button type="submit" className="btn-primary" disabled={processing}>
-                はじめて使う
+                アカウントを作成する
               </button>
             </div>
           </form>

@@ -43,6 +43,6 @@ class UserListsController < ApplicationController
   end
 
   def next_position
-    current_user.user_lists.maximum(:position).to_i + 1
+    current_user.user_lists.lock.maximum(:position).to_i + 1
   end
 end

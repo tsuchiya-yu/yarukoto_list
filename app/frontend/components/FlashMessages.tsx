@@ -8,9 +8,13 @@ export function FlashMessages() {
     return null;
   }
 
-  const messages = [flash.notice && { type: "notice", text: flash.notice }, flash.alert && { type: "alert", text: flash.alert }].filter(
-    Boolean
-  ) as { type: "notice" | "alert"; text: string }[];
+  const messages: { type: "notice" | "alert"; text: string }[] = [];
+  if (flash.notice) {
+    messages.push({ type: "notice", text: flash.notice });
+  }
+  if (flash.alert) {
+    messages.push({ type: "alert", text: flash.alert });
+  }
 
   if (messages.length === 0) {
     return null;
