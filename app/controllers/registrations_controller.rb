@@ -44,6 +44,3 @@ class RegistrationsController < ApplicationController
     registration_params.slice(:name, :email)
   end
 end
-  def registration_form_params
-    registration_params.slice(:name, :email)
-  end

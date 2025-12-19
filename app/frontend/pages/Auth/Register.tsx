@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from "@inertiajs/react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import type { PageProps } from "@/types/page";
@@ -30,12 +30,6 @@ export default function Register({ meta, form }: Props) {
     }
   });
 
-  const updateUserField = (field: "name" | "email" | "password" | "password_confirmation") => {
-    return (event: ChangeEvent<HTMLInputElement>) => {
-      setData("user", { ...data.user, [field]: event.target.value });
-    };
-  };
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     post("/signup");
@@ -64,7 +58,7 @@ export default function Register({ meta, form }: Props) {
                 name="name"
                 autoComplete="name"
                 value={data.user.name}
-                onChange={updateUserField("name")}
+                onChange={(event) => setData("user", { ...data.user, name: event.target.value })}
                 required
               />
               {errors.name && <p className="input-error">{errors.name}</p>}
@@ -77,7 +71,7 @@ export default function Register({ meta, form }: Props) {
                 name="email"
                 autoComplete="email"
                 value={data.user.email}
-                onChange={updateUserField("email")}
+                onChange={(event) => setData("user", { ...data.user, email: event.target.value })}
                 required
               />
               {errors.email && <p className="input-error">{errors.email}</p>}
@@ -90,7 +84,7 @@ export default function Register({ meta, form }: Props) {
                 name="password"
                 autoComplete="new-password"
                 value={data.user.password}
-                onChange={updateUserField("password")}
+                onChange={(event) => setData("user", { ...data.user, password: event.target.value })}
                 required
               />
               {errors.password && <p className="input-error">{errors.password}</p>}
@@ -103,7 +97,9 @@ export default function Register({ meta, form }: Props) {
                 name="password_confirmation"
                 autoComplete="new-password"
                 value={data.user.password_confirmation}
-                onChange={updateUserField("password_confirmation")}
+                onChange={(event) =>
+                  setData("user", { ...data.user, password_confirmation: event.target.value })
+                }
                 required
               />
               {errors.password_confirmation && <p className="input-error">{errors.password_confirmation}</p>}

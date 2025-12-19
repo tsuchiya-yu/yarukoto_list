@@ -7,15 +7,16 @@ class SessionsController < ApplicationController
   end
 
   def create
-    email = session_params[:email]
-    user = email.present? ? User.find_by(email: email.downcase) : nil
-    if user&.authenticate(session_params[:password])
+    permitted = session_params
+    email = permitted[:email]&.downcase
+    user = email && User.find_by(email: email)
+    if user&.authenticate(permitted[:password])
       redirect_to establish_session_for(user), notice: "ログインしました"
     else
       render inertia: "Auth/Login",
              props:
                login_props(
-                 form: { email: session_params[:email] },
+                 form: { email: permitted[:email] },
                  errors: { base: "メールアドレスまたはパスワードが正しくありません" }
                ),
              status: :unprocessable_entity
