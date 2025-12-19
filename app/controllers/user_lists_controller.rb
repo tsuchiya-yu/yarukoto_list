@@ -11,11 +11,13 @@ class UserListsController < ApplicationController
         end
       end
 
-    if already_exists
-      redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
-    else
-      redirect_to public_template_path(template), notice: "自分用リストを作成しました"
-    end
+    notice =
+      if already_exists
+        "このリストはすでに自分用に追加済みです"
+      else
+        "自分用リストを作成しました"
+      end
+    redirect_to public_template_path(template), notice: notice
   rescue ActiveRecord::RecordInvalid
     redirect_to public_template_path(template), alert: "自分用へのコピーに失敗しました"
   rescue ActiveRecord::RecordNotFound
