@@ -75,7 +75,7 @@ Docker など別のレンジからアクセスしたい場合は、カンマ区�
   args = ["mcp:playwright"]
   ```
 
-コマンドを起動したままにしておくと、MCP 対応エージェントから Playwright の各種ツール（`browser_navigate` や `browser_click` など）を利用できます。README の上記設定を必要に応じて調整してください。
+コマンドを起動したままにしておくと、MCP 対応エージェントから Playwright の各種ツール（`browser_navigate` や `browser_click` など）を利用できます。ご利用中の環境に合わせて、上記の設定例を参考に `~/.codex/config.toml` などの MCP クライアント設定を調整してください。
 
 ## ドキュメント
 
