@@ -3,10 +3,7 @@ class UserListsController < ApplicationController
     template = Template.includes(:template_items).find(params[:template_id])
     existing_list = current_user.user_lists.find_by(template: template)
 
-    if existing_list
-      redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
-      return
-    end
+    return redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです" if existing_list
 
     copy_template_for(template)
     redirect_to public_template_path(template), notice: "自分用リストを作成しました"

@@ -8,13 +8,11 @@ export function FlashMessages() {
     return null;
   }
 
-  const messages: { type: "notice" | "alert"; text: string }[] = [];
-  if (flash.notice) {
-    messages.push({ type: "notice", text: flash.notice });
-  }
-  if (flash.alert) {
-    messages.push({ type: "alert", text: flash.alert });
-  }
+  const { notice, alert } = flash;
+  const messages = [
+    notice && { type: "notice" as const, text: notice },
+    alert && { type: "alert" as const, text: alert }
+  ].filter((message): message is { type: "notice" | "alert"; text: string } => Boolean(message));
 
   if (messages.length === 0) {
     return null;
