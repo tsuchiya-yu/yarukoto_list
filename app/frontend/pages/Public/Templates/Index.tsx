@@ -1,8 +1,9 @@
-import { Head, Link, router } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
+import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
 import type { PageProps } from "@/types/page";
 
@@ -113,13 +114,7 @@ export default function TemplateIndex({ templates, filters, pagination, sort_opt
 
   return (
     <>
-      <Head title={meta.title}>
-        <meta name="description" content={meta.description} />
-        <meta property="og:title" content={meta.og_title} />
-        <meta property="og:description" content={meta.og_description} />
-        <meta property="og:image" content={meta.og_image} />
-        <meta property="twitter:card" content="summary_large_image" />
-      </Head>
+      <Seo meta={meta} />
       <PublicShell>
         <header className="public-list-header">
           <p className="section-label">公開リスト</p>

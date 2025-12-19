@@ -1,6 +1,7 @@
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 import { PublicShell } from "@/components/PublicShell";
+import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
 import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
@@ -65,13 +66,7 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
 
   return (
     <>
-      <Head title={meta.title}>
-        <meta name="description" content={meta.description} />
-        <meta property="og:title" content={meta.og_title} />
-        <meta property="og:description" content={meta.og_description} />
-        <meta property="og:image" content={meta.og_image} />
-        <meta property="twitter:card" content="summary_large_image" />
-      </Head>
+      <Seo meta={meta} />
       <PublicShell className="detail-shell">
         <article className="detail-hero">
           <p className="section-label">公開リスト</p>

@@ -1,6 +1,7 @@
-import { Head, Link } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
 import { PublicShell } from "@/components/PublicShell";
+import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
 import type { PageProps } from "@/types/page";
 
@@ -49,13 +50,7 @@ type Props = PageProps<{
 export default function Home({ hero, featured_templates, meta }: Props) {
   return (
     <>
-      <Head title={meta.title}>
-        <meta name="description" content={meta.description} />
-        <meta property="og:title" content={meta.og_title} />
-        <meta property="og:description" content={meta.og_description} />
-        <meta property="og:image" content={meta.og_image} />
-        <meta property="twitter:card" content="summary_large_image" />
-      </Head>
+      <Seo meta={meta} />
       <PublicShell>
         <section className="public-hero">
           <div className="public-hero__copy">

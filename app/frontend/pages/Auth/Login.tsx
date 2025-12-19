@@ -1,7 +1,8 @@
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
+import { Seo } from "@/components/Seo";
 import type { PageProps } from "@/types/page";
 
 type Meta = {
@@ -39,13 +40,7 @@ export default function Login({ meta, form }: Props) {
 
   return (
     <>
-      <Head title={meta.title}>
-        <meta name="description" content={meta.description} />
-        <meta property="og:title" content={meta.og_title} />
-        <meta property="og:description" content={meta.og_description} />
-        <meta property="og:image" content={meta.og_image} />
-        <meta property="twitter:card" content="summary_large_image" />
-      </Head>
+      <Seo meta={meta} />
       <PublicShell>
         <section className="auth-card">
           <p className="section-label">会員の方</p>
