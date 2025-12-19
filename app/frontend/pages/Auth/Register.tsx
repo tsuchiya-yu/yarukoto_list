@@ -3,6 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import { Seo } from "@/components/Seo";
+import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
 
 type Meta = {
@@ -33,7 +34,7 @@ export default function Register({ meta, form }: Props) {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    post("/signup");
+    post(routes.signup());
   };
 
   const handleUserChange = (event: ChangeEvent<HTMLInputElement>) => {

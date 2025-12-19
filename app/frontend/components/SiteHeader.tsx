@@ -1,6 +1,7 @@
 import { Link, usePage } from "@inertiajs/react";
 
 import type { PageProps } from "@/types/page";
+import { routes } from "@/lib/routes";
 
 export function SiteHeader() {
   const { auth } = usePage<PageProps>().props;
@@ -21,7 +22,7 @@ export function SiteHeader() {
               <Link href="/login" className="btn-secondary btn-compact">
                 ログインする
               </Link>
-              <Link href="/signup" className="btn-primary btn-compact">
+              <Link href={routes.signup()} className="btn-primary btn-compact">
                 はじめて使う
               </Link>
             </div>

@@ -3,6 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
 import { Seo } from "@/components/Seo";
+import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
 
 type Meta = {
@@ -95,7 +96,7 @@ export default function Login({ meta, form }: Props) {
             </div>
           </form>
           <p className="auth-links">
-            はじめての方は <Link href="/signup">はじめて使う</Link>
+            はじめての方は <Link href={routes.signup()}>はじめて使う</Link>
           </p>
         </section>
       </PublicShell>
