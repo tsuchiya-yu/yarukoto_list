@@ -13,6 +13,8 @@ class UserListsController < ApplicationController
     redirect_to public_template_path(template), notice: "自分用リストを作成しました"
   rescue ActiveRecord::RecordInvalid
     redirect_to public_template_path(template), alert: "自分用へのコピーに失敗しました"
+  rescue ActiveRecord::RecordNotUnique
+    redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
   rescue ActiveRecord::RecordNotFound
     redirect_to public_templates_path, alert: "指定したやることリストが見つかりませんでした"
   end

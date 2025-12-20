@@ -114,7 +114,7 @@ export default function Register({ meta, form }: Props) {
             </div>
           </form>
           <p className="auth-links">
-            すでにアカウントをお持ちの方は <Link href="/login">ログインする</Link>
+            すでにアカウントをお持ちの方は <Link href={routes.login()}>ログインする</Link>
           </p>
         </section>
       </PublicShell>

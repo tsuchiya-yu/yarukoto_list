@@ -21,9 +21,7 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location_for_login
-    return unless request.get?
-    return if request.xhr?
-    return if [login_path, signup_path].include?(request.path)
+    return if !request.get? || request.xhr? || [login_path, signup_path].include?(request.path)
 
     session[:return_to] = request.fullpath
   end

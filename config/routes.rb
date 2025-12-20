@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get "/.well-known/appspecific/com.chrome.devtools.json",
       to: proc { [204, { "Content-Type" => "application/json" }, ["{}"]] }
 
-  get "/login", to: "sessions#new"
+  get "/login", to: "sessions#new", as: :login
   post "/login", to: "sessions#create"
   delete "/logout", to: "sessions#destroy"
 

@@ -24,7 +24,7 @@ export default function Login({ meta, form }: Props) {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    post("/login");
+    post(routes.login());
   };
 
   const handleSessionChange = (event: ChangeEvent<HTMLInputElement>) => {

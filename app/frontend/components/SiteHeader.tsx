@@ -19,7 +19,7 @@ export function SiteHeader() {
           </Link>
           {!user ? (
             <div className="nav-actions">
-              <Link href="/login" className="btn-secondary btn-compact">
+              <Link href={routes.login()} className="btn-secondary btn-compact">
                 ログインする
               </Link>
               <Link href={routes.signup()} className="btn-primary btn-compact">
@@ -29,7 +29,12 @@ export function SiteHeader() {
           ) : (
             <div className="nav-user">
               <span className="nav-user__name">{user.name} さん</span>
-              <Link href="/logout" method="delete" as="button" className="btn-secondary btn-compact">
+              <Link
+                href={routes.logout()}
+                method="delete"
+                as="button"
+                className="btn-secondary btn-compact"
+              >
                 ログアウト
               </Link>
             </div>

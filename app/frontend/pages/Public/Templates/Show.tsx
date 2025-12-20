@@ -157,7 +157,7 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
               {isCopying ? "コピー中..." : "自分用にする"}
             </button>
           ) : (
-            <Link className="btn-primary" href={template.cta.href}>
+            <Link className="btn-primary" href={routes.login()}>
               {template.cta.button_label}
             </Link>
           )}

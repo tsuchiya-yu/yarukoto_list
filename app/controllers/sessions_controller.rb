@@ -8,8 +8,11 @@ class SessionsController < ApplicationController
 
   def create
     permitted = session_params
-    user = User.find_by(email: permitted[:email]&.downcase)
-    if user&.authenticate(permitted[:password])
+    normalized_email = permitted[:email].to_s.downcase
+    user = normalized_email.present? ? User.find_by(email: normalized_email) : nil
+    authenticating_user = user || User.new
+    authenticated = authenticating_user.authenticate(permitted[:password].to_s)
+    if authenticated && user
       redirect_to establish_session_for(user), notice: "ログインしました"
     else
       render inertia: "Auth/Login",
