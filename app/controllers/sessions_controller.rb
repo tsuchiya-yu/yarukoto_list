@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
              props:
                login_props(
                  form: { email: permitted[:email] },
-                 errors: { base: ["メールアドレスまたはパスワードが正しくありません"] }
+                 errors: { base: "メールアドレスまたはパスワードが正しくありません" }
                ),
              status: :unprocessable_entity
     end

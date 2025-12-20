@@ -38,7 +38,7 @@ class RegistrationsController < ApplicationController
   end
 
   def formatted_errors(record)
-    record.errors.to_hash(true)
+    record.errors.to_hash(true).transform_values { |messages| messages.first.to_s }
   end
 
 end
