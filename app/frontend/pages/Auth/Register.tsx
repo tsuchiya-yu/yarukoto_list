@@ -2,20 +2,13 @@ import { Link, useForm } from "@inertiajs/react";
 import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
-import { Seo } from "@/components/Seo";
+import { FormErrorMessages } from "@/components/FormErrorMessages";
+import { Seo, type SeoMeta } from "@/components/Seo";
 import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
 
-type Meta = {
-  title: string;
-  description: string;
-  og_title: string;
-  og_description: string;
-  og_image: string;
-};
-
 type Props = PageProps<{
-  meta: Meta;
+  meta: SeoMeta;
   form: {
     name: string;
     email: string;
@@ -42,13 +35,6 @@ export default function Register({ meta, form }: Props) {
     setData("user", { ...data.user, [name]: value });
   };
 
-  const renderErrors = (messages?: string[]) =>
-    messages?.map((message, index) => (
-      <p key={`${message}-${index}`} className="input-error">
-        {message}
-      </p>
-    ));
-
   return (
     <>
       <Seo meta={meta} />
@@ -58,6 +44,11 @@ export default function Register({ meta, form }: Props) {
           <h1>{meta.title}</h1>
           <p className="auth-description">{meta.description}</p>
           <form onSubmit={handleSubmit}>
+            <FormErrorMessages
+              messages={errors.base}
+              variant="form"
+              keyPrefix="register-form"
+            />
             <div className="form-field">
               <label htmlFor="register-name">お名前</label>
               <input
@@ -69,7 +60,7 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {renderErrors(errors.name)}
+              <FormErrorMessages messages={errors.name} keyPrefix="register-name" />
             </div>
             <div className="form-field">
               <label htmlFor="register-email">メールアドレス</label>
@@ -82,7 +73,7 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {renderErrors(errors.email)}
+              <FormErrorMessages messages={errors.email} keyPrefix="register-email" />
             </div>
             <div className="form-field">
               <label htmlFor="register-password">パスワード</label>
@@ -95,7 +86,10 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {renderErrors(errors.password)}
+              <FormErrorMessages
+                messages={errors.password}
+                keyPrefix="register-password"
+              />
             </div>
             <div className="form-field">
               <label htmlFor="register-password-confirmation">パスワード（確認）</label>
@@ -108,7 +102,10 @@ export default function Register({ meta, form }: Props) {
                 onChange={handleUserChange}
                 required
               />
-              {renderErrors(errors.password_confirmation)}
+              <FormErrorMessages
+                messages={errors.password_confirmation}
+                keyPrefix="register-password-confirmation"
+              />
             </div>
             <div className="auth-actions">
               <button type="submit" className="btn-primary" disabled={processing}>

@@ -2,20 +2,13 @@ import { Link, useForm } from "@inertiajs/react";
 import type { ChangeEvent, FormEvent } from "react";
 
 import { PublicShell } from "@/components/PublicShell";
-import { Seo } from "@/components/Seo";
+import { FormErrorMessages } from "@/components/FormErrorMessages";
+import { Seo, type SeoMeta } from "@/components/Seo";
 import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
 
-type Meta = {
-  title: string;
-  description: string;
-  og_title: string;
-  og_description: string;
-  og_image: string;
-};
-
 type Props = PageProps<{
-  meta: Meta;
+  meta: SeoMeta;
   form: {
     email: string;
   };
@@ -39,20 +32,6 @@ export default function Login({ meta, form }: Props) {
     setData("session", { ...data.session, [name]: value });
   };
 
-  const renderInputErrors = (messages?: string[]) =>
-    messages?.map((message, index) => (
-      <p key={`${message}-${index}`} className="input-error">
-        {message}
-      </p>
-    ));
-
-  const renderFormErrors = (messages?: string[]) =>
-    messages?.map((message, index) => (
-      <p key={`form-${message}-${index}`} className="form-error">
-        {message}
-      </p>
-    ));
-
   return (
     <>
       <Seo meta={meta} />
@@ -62,7 +41,11 @@ export default function Login({ meta, form }: Props) {
           <h1>{meta.title}</h1>
           <p className="auth-description">{meta.description}</p>
           <form onSubmit={handleSubmit}>
-            {renderFormErrors(errors.base)}
+            <FormErrorMessages
+              messages={errors.base}
+              variant="form"
+              keyPrefix="login-form"
+            />
             <div className="form-field">
               <label htmlFor="login-email">メールアドレス</label>
               <input
@@ -74,7 +57,7 @@ export default function Login({ meta, form }: Props) {
                 onChange={handleSessionChange}
                 required
               />
-              {renderInputErrors(errors.email)}
+              <FormErrorMessages messages={errors.email} keyPrefix="login-email" />
             </div>
             <div className="form-field">
               <label htmlFor="login-password">パスワード</label>
@@ -87,7 +70,10 @@ export default function Login({ meta, form }: Props) {
                 onChange={handleSessionChange}
                 required
               />
-              {renderInputErrors(errors.password)}
+              <FormErrorMessages
+                messages={errors.password}
+                keyPrefix="login-password"
+              />
             </div>
             <div className="auth-actions">
               <button type="submit" className="btn-primary" disabled={processing}>
