@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_22_161000) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_22_162500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,7 +80,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_22_161000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["template_id"], name: "index_user_lists_on_template_id"
-    t.index ["user_id", "position"], name: "index_user_lists_on_user_id_and_position"
+    t.index ["user_id", "position"], name: "index_user_lists_on_user_id_and_position", unique: true
     t.index ["user_id", "template_id"], name: "index_user_lists_on_user_id_and_template_id", unique: true
     t.index ["user_id"], name: "index_user_lists_on_user_id"
   end
