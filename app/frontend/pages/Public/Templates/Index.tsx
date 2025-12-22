@@ -1,8 +1,11 @@
-import { Head, router } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 
+import { PublicShell } from "@/components/PublicShell";
+import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
+import type { PageProps } from "@/types/page";
 
 type TemplateSummary = {
   id: number;
@@ -44,13 +47,13 @@ type Meta = {
   og_image: string;
 };
 
-type Props = {
+type Props = PageProps<{
   templates: TemplateSummary[];
   filters: Filters;
   pagination: Pagination;
   sort_options: SortOption[];
   meta: Meta;
-};
+}>;
 
 export default function TemplateIndex({ templates, filters, pagination, sort_options, meta }: Props) {
   const [keyword, setKeyword] = useState(filters.keyword ?? "");
@@ -111,14 +114,8 @@ export default function TemplateIndex({ templates, filters, pagination, sort_opt
 
   return (
     <>
-      <Head title={meta.title}>
-        <meta name="description" content={meta.description} />
-        <meta property="og:title" content={meta.og_title} />
-        <meta property="og:description" content={meta.og_description} />
-        <meta property="og:image" content={meta.og_image} />
-        <meta property="twitter:card" content="summary_large_image" />
-      </Head>
-      <main className="public-shell">
+      <Seo meta={meta} />
+      <PublicShell>
         <header className="public-list-header">
           <p className="section-label">公開リスト</p>
           <h1>公式やることリスト一覧</h1>
@@ -183,9 +180,9 @@ export default function TemplateIndex({ templates, filters, pagination, sort_opt
                 </div>
               </dl>
               <div className="template-card__actions">
-                <a href={`/lists/${template.id}`} className="btn-primary">
+                <Link href={`/lists/${template.id}`} className="btn-primary">
                   このリストを見る
-                </a>
+                </Link>
               </div>
             </article>
           ))}
@@ -214,7 +211,7 @@ export default function TemplateIndex({ templates, filters, pagination, sort_opt
             次へ
           </button>
         </div>
-      </main>
+      </PublicShell>
     </>
   );
 }

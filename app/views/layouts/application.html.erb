@@ -7,6 +7,15 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= vite_client_tag %>
+    <% if Rails.env.development? %>
+      <script type="module">
+        import RefreshRuntime from "/vite/@react-refresh";
+        RefreshRuntime.injectIntoGlobalHook(window);
+        window.$RefreshReg$ = () => {};
+        window.$RefreshSig$ = () => (type) => type;
+        window.__vite_plugin_react_preamble_installed__ = true;
+      </script>
+    <% end %>
     <%= vite_javascript_tag "application.tsx", defer: true %>
     <%= inertia_ssr_head %>
   </head>

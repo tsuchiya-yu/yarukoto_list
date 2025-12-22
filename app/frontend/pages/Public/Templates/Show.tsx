@@ -1,6 +1,11 @@
-import { Head } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
+import { useState } from "react";
 
+import { PublicShell } from "@/components/PublicShell";
+import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
+import { routes } from "@/lib/routes";
+import type { PageProps } from "@/types/page";
 
 type TimelineItem = {
   id: number;
@@ -47,23 +52,24 @@ type Meta = {
   og_image: string;
 };
 
-type Props = {
+type Props = PageProps<{
   template: TemplateDetail;
   fixed_notice: string;
   meta: Meta;
-};
+}>;
 
 export default function TemplateShow({ template, fixed_notice, meta }: Props) {
+  const { auth } = usePage<PageProps>().props;
+  const isLoggedIn = Boolean(auth?.user);
+  const [isCopying, setIsCopying] = useState(false);
+  const ctaMessage = isLoggedIn
+    ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
+    : template.cta.message;
+
   return (
     <>
-      <Head title={meta.title}>
-        <meta name="description" content={meta.description} />
-        <meta property="og:title" content={meta.og_title} />
-        <meta property="og:description" content={meta.og_description} />
-        <meta property="og:image" content={meta.og_image} />
-        <meta property="twitter:card" content="summary_large_image" />
-      </Head>
-      <main className="public-shell detail-shell">
+      <Seo meta={meta} />
+      <PublicShell className="detail-shell">
         <article className="detail-hero">
           <p className="section-label">公開リスト</p>
           <h1>{template.title}</h1>
@@ -129,17 +135,38 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
         <section className="cta-panel">
           <div>
             <h2>自分用にする</h2>
-            <p>{template.cta.message}</p>
+            <p>{ctaMessage}</p>
           </div>
-          <a className="btn-primary" href={template.cta.href}>
-            {template.cta.button_label}
-          </a>
+          {isLoggedIn ? (
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={isCopying}
+              onClick={() => {
+                setIsCopying(true);
+                router.post(
+                  routes.userLists(),
+                  { template_id: template.id },
+                  {
+                    preserveScroll: true,
+                    onFinish: () => setIsCopying(false)
+                  }
+                );
+              }}
+            >
+              {isCopying ? "コピー中..." : "自分用にする"}
+            </button>
+          ) : (
+            <Link className="btn-primary" href={routes.login()}>
+              {template.cta.button_label}
+            </Link>
+          )}
         </section>
 
         <section className="fixed-notice">
           <p>{fixed_notice}</p>
         </section>
-      </main>
+      </PublicShell>
     </>
   );
 }
