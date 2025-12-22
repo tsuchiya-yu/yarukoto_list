@@ -3,6 +3,7 @@ import { Link } from "@inertiajs/react";
 import { PublicShell } from "@/components/PublicShell";
 import { Seo, type SeoMeta } from "@/components/Seo";
 import { formatDate } from "@/lib/formatters";
+import { routes } from "@/lib/routes";
 import type { PageProps } from "@/types/page";
 
 type UserListSummary = {
@@ -34,7 +35,7 @@ export default function UserListsIndex({ user_lists, fixed_notice, meta }: Props
             <div className="template-grid">
               {user_lists.map((list) => (
                 <Link
-                  href={`/user_lists/${list.id}`}
+                  href={routes.userList(list.id)}
                   key={list.id}
                   className="template-card-link"
                 >

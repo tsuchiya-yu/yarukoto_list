@@ -73,9 +73,7 @@ class UserListsController < ApplicationController
         {
           id: item.id,
           title: item.title,
-          description: item.description,
-          completed: item.completed,
-          position: item.position
+          description: item.description
         }
       end
     }

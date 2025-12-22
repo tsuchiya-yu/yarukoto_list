@@ -7,8 +7,6 @@ type UserListItem = {
   id: number;
   title: string;
   description?: string | null;
-  completed: boolean;
-  position: number;
 };
 
 type UserListDetail = {
