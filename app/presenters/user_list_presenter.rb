@@ -8,7 +8,7 @@ class UserListPresenter
       id: @user_list.id,
       title: @user_list.title,
       created_at: @user_list.created_at.iso8601,
-      items_count: @user_list.items_count.to_i
+      items_count: @user_list.user_list_items_count.to_i
     }
   end
 

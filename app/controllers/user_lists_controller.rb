@@ -3,9 +3,6 @@ class UserListsController < ApplicationController
     user_lists =
       current_user
       .user_lists
-      .left_joins(:user_list_items)
-      .select("user_lists.*, COUNT(user_list_items.id) AS items_count")
-      .group("user_lists.id")
       .order(created_at: :desc)
 
     render inertia: "UserLists/Index", props: {

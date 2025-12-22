@@ -1,4 +1,4 @@
-type RouteConfig = Record<string, string | ((...args: never[]) => string)>;
+type RouteConfig = Record<string, string | ((...args: unknown[]) => string)>;
 type RouteHelpers<T extends RouteConfig> = {
   [K in keyof T]: T[K] extends (...args: infer A) => string ? (...args: A) => string : () => T[K];
 };
