@@ -5,9 +5,14 @@ class AddUserListItemsCountToUserLists < ActiveRecord::Migration[7.1]
     reversible do |dir|
       dir.up do
         UserList.reset_column_information
-        UserList.find_each do |list|
-          UserList.reset_counters(list.id, :user_list_items)
-        end
+        execute <<~SQL.squish
+          UPDATE user_lists
+          SET user_list_items_count = (
+            SELECT COUNT(1)
+            FROM user_list_items
+            WHERE user_list_items.user_list_id = user_lists.id
+          )
+        SQL
       end
     end
   end

@@ -30,7 +30,7 @@ class UserListsController < ApplicationController
 
   def create
     UserList.transaction do
-      template = Template.includes(:template_items).lock.find(params[:template_id])
+      template = Template.includes(:template_items).find(params[:template_id])
       current_user.with_lock do
         if current_user.user_lists.exists?(template: template)
           return redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
