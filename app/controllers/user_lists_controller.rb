@@ -9,7 +9,7 @@ class UserListsController < ApplicationController
       .order(created_at: :desc)
 
     render inertia: "UserLists/Index", props: {
-      user_lists: user_lists.map { |list| user_list_summary(list) },
+      user_lists: user_lists.map { |list| UserListPresenter.new(list).summary },
       fixed_notice: fixed_notice_text,
       meta: meta_payload(
         "自分用リスト",
@@ -22,7 +22,7 @@ class UserListsController < ApplicationController
     user_list = current_user.user_lists.includes(:user_list_items).find(params[:id])
 
     render inertia: "UserLists/Show", props: {
-      user_list: user_list_detail(user_list),
+      user_list: UserListPresenter.new(user_list).detail,
       fixed_notice: fixed_notice_text,
       meta: meta_payload(
         "自分用リスト",
@@ -53,31 +53,6 @@ class UserListsController < ApplicationController
   end
 
   private
-
-  def user_list_summary(user_list)
-    {
-      id: user_list.id,
-      title: user_list.title,
-      created_at: user_list.created_at.iso8601,
-      items_count: user_list.items_count.to_i
-    }
-  end
-
-  def user_list_detail(user_list)
-    {
-      id: user_list.id,
-      title: user_list.title,
-      description: user_list.description,
-      created_at: user_list.created_at.iso8601,
-      items: user_list.user_list_items.map do |item|
-        {
-          id: item.id,
-          title: item.title,
-          description: item.description
-        }
-      end
-    }
-  end
 
   def copy_template_for(template)
     user_list =
