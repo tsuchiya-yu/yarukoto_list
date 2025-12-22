@@ -18,6 +18,19 @@ class UserListsController < ApplicationController
     }
   end
 
+  def show
+    user_list = current_user.user_lists.includes(:user_list_items).find(params[:id])
+
+    render inertia: "UserLists/Show", props: {
+      user_list: user_list_detail(user_list),
+      fixed_notice: fixed_notice_text,
+      meta: meta_payload(
+        "自分用リスト",
+        "自分用に追加したリストの内容を確認できます。"
+      )
+    }
+  end
+
   def create
     template = Template.includes(:template_items).find(params[:template_id])
     UserList.transaction do
@@ -50,6 +63,24 @@ class UserListsController < ApplicationController
     }
   end
 
+  def user_list_detail(user_list)
+    {
+      id: user_list.id,
+      title: user_list.title,
+      description: user_list.description,
+      created_at: user_list.created_at.iso8601,
+      items: user_list.user_list_items.map do |item|
+        {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          completed: item.completed,
+          position: item.position
+        }
+      end
+    }
+  end
+
   def copy_template_for(template)
     user_list =
       current_user.user_lists.create!(
@@ -79,6 +110,6 @@ class UserListsController < ApplicationController
   end
 
   def next_position
-    current_user.user_lists.maximum(:position).to_i + 1
+    current_user.user_lists.lock.order(position: :desc).limit(1).pick(:position).to_i + 1
   end
 end

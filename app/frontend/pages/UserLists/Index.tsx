@@ -1,3 +1,5 @@
+import { Link } from "@inertiajs/react";
+
 import { PublicShell } from "@/components/PublicShell";
 import { Seo, type SeoMeta } from "@/components/Seo";
 import { formatDate } from "@/lib/formatters";
@@ -31,19 +33,25 @@ export default function UserListsIndex({ user_lists, fixed_notice, meta }: Props
           {user_lists.length > 0 ? (
             <div className="template-grid">
               {user_lists.map((list) => (
-                <article key={list.id} className="template-card">
-                  <h2>{list.title}</h2>
-                  <dl className="template-card__meta">
-                    <div>
-                      <dt>作成日時</dt>
-                      <dd>{formatDate(list.created_at)}</dd>
-                    </div>
-                    <div>
-                      <dt>やること</dt>
-                      <dd>{list.items_count}件</dd>
-                    </div>
-                  </dl>
-                </article>
+                <Link
+                  href={`/user_lists/${list.id}`}
+                  key={list.id}
+                  className="template-card-link"
+                >
+                  <article className="template-card">
+                    <h2>{list.title}</h2>
+                    <dl className="template-card__meta">
+                      <div>
+                        <dt>作成日時</dt>
+                        <dd>{formatDate(list.created_at)}</dd>
+                      </div>
+                      <div>
+                        <dt>やること</dt>
+                        <dd>{list.items_count}件</dd>
+                      </div>
+                    </dl>
+                  </article>
+                </Link>
               ))}
             </div>
           ) : (

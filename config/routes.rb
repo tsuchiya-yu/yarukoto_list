@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get "/signup", to: "registrations#new", as: :signup
   post "/signup", to: "registrations#create"
 
-  resources :user_lists, only: %i[index create]
+  resources :user_lists, only: %i[index show create]
 
   scope module: :public do
     get "/lists", to: "templates#index", as: :public_templates
