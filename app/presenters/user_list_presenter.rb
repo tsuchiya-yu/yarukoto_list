@@ -13,6 +13,7 @@ class UserListPresenter
   end
 
   def detail
+    # N+1回避のため、呼び出し元で user_list_items を includes しておく
     {
       id: @user_list.id,
       title: @user_list.title,
