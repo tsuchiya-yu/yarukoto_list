@@ -43,7 +43,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_20_173814) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["template_id"], name: "index_template_reviews_on_template_id"
-    t.index ["template_id", "user_id"], name: "index_template_reviews_on_template_id_and_user_id", unique: true
     t.index ["user_id"], name: "index_template_reviews_on_user_id"
   end
 
@@ -80,8 +79,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_20_173814) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["template_id"], name: "index_user_lists_on_template_id"
-    t.index ["user_id", "template_id"], name: "index_user_lists_on_user_id_and_template_id", unique: true
     t.index ["user_id", "position"], name: "index_user_lists_on_user_id_and_position"
+    t.index ["user_id", "template_id"], name: "index_user_lists_on_user_id_and_template_id", unique: true
     t.index ["user_id"], name: "index_user_lists_on_user_id"
   end
 
@@ -91,7 +90,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_20_173814) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "template_items", "templates"

@@ -1,25 +1,50 @@
 class UserListsController < ApplicationController
+  def index
+    user_lists =
+      current_user
+      .user_lists
+      .left_joins(:user_list_items)
+      .select("user_lists.*, COUNT(user_list_items.id) AS items_count")
+      .group("user_lists.id")
+      .order(created_at: :desc)
+
+    render inertia: "UserLists/Index", props: {
+      user_lists: user_lists.map { |list| user_list_summary(list) },
+      fixed_notice: fixed_notice_text,
+      meta: meta_payload(
+        "自分用リスト",
+        "自分用に追加したリストを一覧で確認できます。"
+      )
+    }
+  end
+
   def create
     template = Template.includes(:template_items).find(params[:template_id])
-    UserList.transaction do
-      lists = current_user.user_lists.lock
-      if lists.exists?(template: template)
-        return redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
-      end
+    return redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです" if current_user.user_lists.exists?(template: template)
 
+    UserList.transaction do
       copy_template_for(template)
     end
 
-    redirect_to public_template_path(template), notice: "自分用リストを作成しました"
+    redirect_to user_lists_path, notice: "自分用リストを作成しました"
   rescue ActiveRecord::RecordInvalid
-    redirect_to public_template_path(template), alert: "自分用へのコピーに失敗しました"
+    redirect_to user_lists_path, alert: "自分用へのコピーに失敗しました"
   rescue ActiveRecord::RecordNotUnique
-    redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
+    redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
   rescue ActiveRecord::RecordNotFound
     redirect_to public_templates_path, alert: "指定したやることリストが見つかりませんでした"
   end
 
   private
+
+  def user_list_summary(user_list)
+    {
+      id: user_list.id,
+      title: user_list.title,
+      created_at: user_list.created_at.iso8601,
+      items_count: user_list.items_count.to_i
+    }
+  end
 
   def copy_template_for(template)
     user_list =
@@ -50,6 +75,6 @@ class UserListsController < ApplicationController
   end
 
   def next_position
-    current_user.user_lists.lock.maximum(:position).to_i + 1
+    current_user.user_lists.maximum(:position).to_i + 1
   end
 end
