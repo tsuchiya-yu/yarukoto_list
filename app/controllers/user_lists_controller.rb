@@ -29,8 +29,8 @@ class UserListsController < ApplicationController
   end
 
   def create
+    template = Template.includes(:template_items).find(params[:template_id])
     UserList.transaction do
-      template = Template.includes(:template_items).find(params[:template_id])
       current_user.with_lock do
         if current_user.user_lists.exists?(template: template)
           return redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
@@ -45,6 +45,8 @@ class UserListsController < ApplicationController
     redirect_to user_lists_path, alert: "自分用へのコピーに失敗しました"
   rescue ActiveRecord::RecordNotUnique
     redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
+  rescue ActiveRecord::InvalidForeignKey
+    redirect_to public_templates_path, alert: "指定したやることリストが見つかりませんでした"
   rescue ActiveRecord::RecordNotFound
     redirect_to public_templates_path, alert: "指定したやることリストが見つかりませんでした"
   end
