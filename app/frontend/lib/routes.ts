@@ -3,13 +3,10 @@ type RouteHelpers<T extends RouteConfig> = {
   [K in keyof T]: () => T[K];
 };
 
-const createRoutes = <T extends RouteConfig>(routes: T): RouteHelpers<T> => {
-  const helpers = {} as RouteHelpers<T>;
-  (Object.keys(routes) as (keyof T)[]).forEach((key) => {
-    helpers[key] = () => routes[key];
-  });
-  return helpers;
-};
+const createRoutes = <T extends RouteConfig>(routes: T): RouteHelpers<T> =>
+  Object.fromEntries(
+    Object.entries(routes).map(([key, value]) => [key, () => value])
+  ) as RouteHelpers<T>;
 
 export const routes = createRoutes({
   userLists: "/user_lists",

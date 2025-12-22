@@ -20,10 +20,14 @@ class UserListsController < ApplicationController
 
   def create
     template = Template.includes(:template_items).find(params[:template_id])
-    return redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです" if current_user.user_lists.exists?(template: template)
-
     UserList.transaction do
-      copy_template_for(template)
+      current_user.with_lock do
+        if current_user.user_lists.exists?(template: template)
+          return redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
+        end
+
+        copy_template_for(template)
+      end
     end
 
     redirect_to user_lists_path, notice: "自分用リストを作成しました"
