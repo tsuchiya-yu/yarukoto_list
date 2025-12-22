@@ -40,7 +40,7 @@ class SessionsController < ApplicationController
     description =
       "やることリストにログインして、自分用にコピーする準備を進めましょう。ログイン後はヘッダーからいつでもログアウトできます。"
     {
-      meta: meta_payload("ログインする", description),
+      meta: meta_payload("ログイン", description),
       form: {
         email: form[:email].to_s
       },

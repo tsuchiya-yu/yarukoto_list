@@ -116,7 +116,7 @@ module Public
         end,
         cta: {
           message: "自分用にするにはログインしてください。",
-          button_label: "ログインする",
+          button_label: "ログイン",
           href: "/login"
         }
       }

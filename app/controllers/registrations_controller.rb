@@ -28,7 +28,7 @@ class RegistrationsController < ApplicationController
     description =
       "メールアドレスとパスワードを設定して、やることリストを自分用に管理できるようにします。アカウント作成後はログイン済みの状態でヘッダーに表示されます。"
     {
-      meta: meta_payload("はじめて使う", description),
+      meta: meta_payload("アカウント登録", description),
       form: {
         name: form[:name].to_s,
         email: form[:email].to_s

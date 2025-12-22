@@ -77,7 +77,7 @@ export default function Login({ meta, form }: Props) {
             </div>
             <div className="auth-actions">
               <button type="submit" className="btn-primary" disabled={processing}>
-                ログインする
+                ログイン
               </button>
             </div>
           </form>

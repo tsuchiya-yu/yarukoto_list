@@ -27,7 +27,7 @@ module Public
         },
         secondary_cta: {
           href: "/signup",
-          label: "はじめて使う"
+          label: "アカウント登録"
         },
         highlights: [
           "人気のやることリストをそのまま確認",

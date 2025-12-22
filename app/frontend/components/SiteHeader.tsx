@@ -20,10 +20,10 @@ export function SiteHeader() {
           {!user ? (
             <div className="nav-actions">
               <Link href={routes.login()} className="btn-secondary btn-compact">
-                ログインする
+                ログイン
               </Link>
               <Link href={routes.signup()} className="btn-primary btn-compact">
-                はじめて使う
+                アカウント登録
               </Link>
             </div>
           ) : (
