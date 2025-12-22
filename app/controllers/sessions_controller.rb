@@ -10,11 +10,11 @@ class SessionsController < ApplicationController
     permitted = session_params
     normalized_email = permitted[:email].to_s.downcase
     user = normalized_email.present? ? User.find_by(email: normalized_email) : nil
-    authenticating_user = user || User.new
-    authenticated = authenticating_user.authenticate(permitted[:password].to_s)
-    if authenticated && user
+    authenticated = user&.authenticate(permitted[:password].to_s)
+    if authenticated
       redirect_to establish_session_for(user), notice: "ログインしました"
     else
+      BCrypt::Password.create(permitted[:password].to_s) if user.nil?
       render inertia: "Auth/Login",
              props:
                login_props(
