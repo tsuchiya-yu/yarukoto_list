@@ -14,6 +14,7 @@ type UserListDetail = {
   title: string;
   description?: string | null;
   created_at: string;
+  items_count: number;
   items: UserListItem[];
 };
 
@@ -45,7 +46,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
             </div>
             <div>
               <dt>やること</dt>
-              <dd>{user_list.items.length}件</dd>
+              <dd>{user_list.items_count}件</dd>
             </div>
           </dl>
         </section>

@@ -8,7 +8,7 @@ class UserListPresenter
       id: @user_list.id,
       title: @user_list.title,
       created_at: @user_list.created_at.iso8601,
-      items_count: @user_list.user_list_items_count.to_i
+      items_count: @user_list.user_list_items_count
     }
   end
 
@@ -18,6 +18,7 @@ class UserListPresenter
       title: @user_list.title,
       description: @user_list.description,
       created_at: @user_list.created_at.iso8601,
+      items_count: @user_list.user_list_items_count,
       items: @user_list.user_list_items.map do |item|
         {
           id: item.id,
