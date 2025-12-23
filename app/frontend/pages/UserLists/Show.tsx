@@ -157,6 +157,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       return;
     }
 
+    const previousItems = items;
     const nextItems = [...items];
     const [moved] = nextItems.splice(index, 1);
     nextItems.splice(targetIndex, 0, moved);
@@ -166,7 +167,8 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       routes.userListItemsReorder(user_list.id),
       { item_ids: nextItems.map((item) => item.id) },
       {
-        preserveScroll: true
+        preserveScroll: true,
+        onError: () => setItems(previousItems)
       }
     );
   };
@@ -180,6 +182,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       return;
     }
 
+    const previousItems = items;
     const targetId = deleteTarget.id;
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
@@ -187,7 +190,8 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     setDeleteTarget(null);
 
     router.delete(routes.userListItem(user_list.id, targetId), {
-      preserveScroll: true
+      preserveScroll: true,
+      onError: () => setItems(previousItems)
     });
   };
 
