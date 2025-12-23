@@ -43,18 +43,22 @@ class UserListItemsController < ApplicationController
       Array(params[:item_ids])
       .filter_map { |id| Integer(id, 10) rescue nil }
       .uniq
-    items = @user_list.user_list_items.where(id: item_ids)
-    if item_ids.blank? ||
-       items.size != item_ids.size ||
-       items.size != @user_list.user_list_items.size
-      return redirect_to user_list_path(@user_list),
-                         alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
+
+    UserListItem.transaction do
+      @user_list.lock!
+      items = @user_list.user_list_items.where(id: item_ids)
+      if item_ids.blank? ||
+         items.size != item_ids.size ||
+         items.size != @user_list.user_list_items.count
+        return redirect_to user_list_path(@user_list),
+                           alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
+      end
+
+      now = Time.current
+      case_sql = item_ids.each_with_index.map { |id, index| "WHEN #{id} THEN #{index}" }.join(" ")
+
+      items.update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
     end
-
-    now = Time.current
-    case_sql = item_ids.each_with_index.map { |id, index| "WHEN #{id} THEN #{index}" }.join(" ")
-
-    items.update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
 
     redirect_to user_list_path(@user_list), notice: "並び順を保存しました"
   end
