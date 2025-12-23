@@ -5,7 +5,8 @@ import {
   useRef,
   useState,
   type ChangeEvent,
-  type FormEvent
+  type FormEvent,
+  type RefObject
 } from "react";
 
 import { FormErrorMessages } from "@/components/FormErrorMessages";
@@ -38,6 +39,187 @@ type Props = PageProps<{
   fixed_notice: string;
   meta: SeoMeta;
 }>;
+
+type FormErrors = Record<string, string | string[] | undefined>;
+
+type AddItemFormProps = {
+  data: {
+    user_list_item: {
+      title: string;
+      description: string;
+    };
+  };
+  errors: FormErrors;
+  processing: boolean;
+  onChange: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+};
+
+const AddItemForm = ({
+  data,
+  errors,
+  processing,
+  onChange,
+  onSubmit
+}: AddItemFormProps) => (
+  <section className="public-section">
+    <header className="section-header">
+      <p className="section-label">やることを追加</p>
+      <h2>新しいやること</h2>
+    </header>
+    <form onSubmit={onSubmit} className="item-form">
+      <FormErrorMessages
+        messages={errors.base}
+        variant="form"
+        keyPrefix="user-list-item-form"
+      />
+      <div className="form-field">
+        <label htmlFor="user-list-item-title">やること</label>
+        <input
+          id="user-list-item-title"
+          name="title"
+          value={data.user_list_item.title}
+          onChange={onChange}
+          placeholder="例：引越しの見積もりを取る"
+        />
+        <FormErrorMessages
+          messages={errors.title}
+          keyPrefix="user-list-item-title"
+        />
+      </div>
+      <div className="form-field">
+        <label htmlFor="user-list-item-description">補足（任意）</label>
+        <textarea
+          id="user-list-item-description"
+          name="description"
+          value={data.user_list_item.description}
+          onChange={onChange}
+          placeholder="必要ならメモを残せます"
+          rows={3}
+        />
+        <FormErrorMessages
+          messages={errors.description}
+          keyPrefix="user-list-item-description"
+        />
+      </div>
+      <button type="submit" className="btn-primary btn-compact" disabled={processing}>
+        {processing ? "追加中..." : "やることを追加"}
+      </button>
+    </form>
+  </section>
+);
+
+type UserItemsListProps = {
+  items: UserListItem[];
+  isReordering: boolean;
+  updatingItemIds: number[];
+  onToggle: (itemId: number) => void;
+  onMove: (index: number, direction: number) => void;
+  onDelete: (item: UserListItem) => void;
+};
+
+const UserItemsList = ({
+  items,
+  isReordering,
+  updatingItemIds,
+  onToggle,
+  onMove,
+  onDelete
+}: UserItemsListProps) => (
+  <section className="public-section">
+    <header className="section-header">
+      <p className="section-label">やること一覧</p>
+      <h2>このリストの内容</h2>
+    </header>
+    <ol className="timeline-list user-list-items">
+      {items.map((item, index) => (
+        <li key={item.id} className={item.completed ? "is-completed" : undefined}>
+          <div className="user-list-item__header">
+            <div>
+              <div className="timeline-step">STEP {index + 1}</div>
+              <p className="item-status">{item.completed ? "完了" : "未完了"}</p>
+              <h3>{item.title}</h3>
+            </div>
+            <div className="item-actions">
+              <button
+                type="button"
+                className="btn-secondary btn-compact"
+                onClick={() => onToggle(item.id)}
+                aria-pressed={item.completed}
+                disabled={updatingItemIds.includes(item.id)}
+              >
+                {item.completed ? "未完了に戻す" : "完了にする"}
+              </button>
+              <button
+                type="button"
+                className="btn-ghost btn-compact"
+                onClick={() => onMove(index, -1)}
+                disabled={isReordering || index === 0}
+              >
+                上へ
+              </button>
+              <button
+                type="button"
+                className="btn-ghost btn-compact"
+                onClick={() => onMove(index, 1)}
+                disabled={isReordering || index === items.length - 1}
+              >
+                下へ
+              </button>
+              <button
+                type="button"
+                className="btn-danger btn-compact"
+                onClick={() => onDelete(item)}
+              >
+                消す
+              </button>
+            </div>
+          </div>
+          {item.description && <p>{item.description}</p>}
+        </li>
+      ))}
+    </ol>
+    {items.length === 0 && (
+      <p className="empty-text">やることの内容はまだありません。</p>
+    )}
+  </section>
+);
+
+type DeleteConfirmationDialogProps = {
+  isOpen: boolean;
+  dialogRef: RefObject<HTMLDivElement>;
+  onDelete: () => void;
+  onCancel: () => void;
+};
+
+const DeleteConfirmationDialog = ({
+  isOpen,
+  dialogRef,
+  onDelete,
+  onCancel
+}: DeleteConfirmationDialogProps) => {
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div className="dialog-overlay" role="dialog" aria-modal="true">
+      <div className="dialog-card" ref={dialogRef}>
+        <p className="dialog-title">このやることを消しますか？</p>
+        <div className="dialog-actions">
+          <button type="button" className="btn-danger" onClick={onDelete}>
+            消す
+          </button>
+          <button type="button" className="btn-secondary" onClick={onCancel}>
+            そのままにする
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function UserListsShow({ user_list, fixed_notice, meta }: Props) {
   const [items, setItems] = useState(user_list.items);
@@ -188,139 +370,33 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
           </dl>
         </section>
 
-        <section className="public-section">
-          <header className="section-header">
-            <p className="section-label">やることを追加</p>
-            <h2>新しいやること</h2>
-          </header>
-          <form onSubmit={handleSubmit} className="item-form">
-            <FormErrorMessages
-              messages={errors.base}
-              variant="form"
-              keyPrefix="user-list-item-form"
-            />
-            <div className="form-field">
-              <label htmlFor="user-list-item-title">やること</label>
-              <input
-                id="user-list-item-title"
-                name="title"
-                value={data.user_list_item.title}
-                onChange={handleFormChange}
-                placeholder="例：引越しの見積もりを取る"
-              />
-              <FormErrorMessages
-                messages={errors.title}
-                keyPrefix="user-list-item-title"
-              />
-            </div>
-            <div className="form-field">
-              <label htmlFor="user-list-item-description">補足（任意）</label>
-              <textarea
-                id="user-list-item-description"
-                name="description"
-                value={data.user_list_item.description}
-                onChange={handleFormChange}
-                placeholder="必要ならメモを残せます"
-                rows={3}
-              />
-              <FormErrorMessages
-                messages={errors.description}
-                keyPrefix="user-list-item-description"
-              />
-            </div>
-            <button type="submit" className="btn-primary btn-compact" disabled={processing}>
-              {processing ? "追加中..." : "やることを追加"}
-            </button>
-          </form>
-        </section>
+        <AddItemForm
+          data={data}
+          errors={errors}
+          processing={processing}
+          onChange={handleFormChange}
+          onSubmit={handleSubmit}
+        />
 
-        <section className="public-section">
-          <header className="section-header">
-            <p className="section-label">やること一覧</p>
-            <h2>このリストの内容</h2>
-          </header>
-          <ol className="timeline-list user-list-items">
-            {items.map((item, index) => (
-              <li key={item.id} className={item.completed ? "is-completed" : undefined}>
-                <div className="user-list-item__header">
-                  <div>
-                    <div className="timeline-step">STEP {index + 1}</div>
-                    <p className="item-status">
-                      {item.completed ? "完了" : "未完了"}
-                    </p>
-                    <h3>{item.title}</h3>
-                  </div>
-                  <div className="item-actions">
-                    <button
-                      type="button"
-                      className="btn-secondary btn-compact"
-                      onClick={() => handleToggle(item.id)}
-                      aria-pressed={item.completed}
-                      disabled={updatingItemIds.includes(item.id)}
-                    >
-                      {item.completed ? "未完了に戻す" : "完了にする"}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-ghost btn-compact"
-                      onClick={() => handleMove(index, -1)}
-                      disabled={isReordering || index === 0}
-                    >
-                      上へ
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-ghost btn-compact"
-                      onClick={() => handleMove(index, 1)}
-                      disabled={isReordering || index === items.length - 1}
-                    >
-                      下へ
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-danger btn-compact"
-                      onClick={() => confirmDelete(item)}
-                    >
-                      消す
-                    </button>
-                  </div>
-                </div>
-                {item.description && <p>{item.description}</p>}
-              </li>
-            ))}
-          </ol>
-          {items.length === 0 && (
-            <p className="empty-text">やることの内容はまだありません。</p>
-          )}
-        </section>
+        <UserItemsList
+          items={items}
+          isReordering={isReordering}
+          updatingItemIds={updatingItemIds}
+          onToggle={handleToggle}
+          onMove={handleMove}
+          onDelete={confirmDelete}
+        />
 
         <section className="fixed-notice">
           <p>{fixed_notice}</p>
         </section>
 
-        {deleteTarget && (
-          <div className="dialog-overlay" role="dialog" aria-modal="true">
-            <div className="dialog-card" ref={dialogRef}>
-              <p className="dialog-title">このやることを消しますか？</p>
-              <div className="dialog-actions">
-                <button
-                  type="button"
-                  className="btn-danger"
-                  onClick={handleDelete}
-                >
-                  消す
-                </button>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={closeDeleteDialog}
-                >
-                  そのままにする
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <DeleteConfirmationDialog
+          isOpen={Boolean(deleteTarget)}
+          dialogRef={dialogRef}
+          onDelete={handleDelete}
+          onCancel={closeDeleteDialog}
+        />
       </PublicShell>
     </>
   );
