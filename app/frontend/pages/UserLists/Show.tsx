@@ -73,18 +73,18 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
     previousFocusRef.current = document.activeElement as HTMLElement | null;
     const dialogElement = dialogRef.current;
-    const focusableElements = dialogElement
-      ? Array.from(
-          dialogElement.querySelectorAll<HTMLElement>(
-            "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-          )
-        ).filter((element) => !element.hasAttribute("disabled"))
-      : [];
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    const getFocusableElements = () =>
+      dialogElement
+        ? Array.from(
+            dialogElement.querySelectorAll<HTMLElement>(
+              "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+            )
+          ).filter((element) => !element.hasAttribute("disabled"))
+        : [];
 
-    if (firstElement) {
-      firstElement.focus();
+    const initialFocusable = getFocusableElements();
+    if (initialFocusable.length > 0) {
+      initialFocusable[0].focus();
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -94,14 +94,23 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
         return;
       }
 
-      if (event.key !== "Tab" || focusableElements.length === 0) {
+      if (event.key !== "Tab") {
         return;
       }
 
-      if (event.shiftKey && document.activeElement === firstElement) {
-        event.preventDefault();
-        lastElement?.focus();
-      } else if (!event.shiftKey && document.activeElement === lastElement) {
+      const focusableElements = getFocusableElements();
+      if (focusableElements.length === 0) {
+        return;
+      }
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement?.focus();
+        }
+      } else if (document.activeElement === lastElement) {
         event.preventDefault();
         firstElement?.focus();
       }
