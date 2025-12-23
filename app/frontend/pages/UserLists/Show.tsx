@@ -115,6 +115,7 @@ type UserItemsListProps = {
   items: UserListItem[];
   isReordering: boolean;
   updatingItemIds: number[];
+  deletingItemId: number | null;
   onToggle: (itemId: number) => void;
   onMove: (index: number, direction: number) => void;
   onDelete: (item: UserListItem) => void;
@@ -124,6 +125,7 @@ const UserItemsList = ({
   items,
   isReordering,
   updatingItemIds,
+  deletingItemId,
   onToggle,
   onMove,
   onDelete
@@ -148,7 +150,7 @@ const UserItemsList = ({
                 className="btn-secondary btn-compact"
                 onClick={() => onToggle(item.id)}
                 aria-pressed={item.completed}
-                disabled={updatingItemIds.includes(item.id)}
+                disabled={updatingItemIds.includes(item.id) || deletingItemId !== null}
               >
                 {item.completed ? "未完了に戻す" : "完了にする"}
               </button>
@@ -156,7 +158,7 @@ const UserItemsList = ({
                 type="button"
                 className="btn-ghost btn-compact"
                 onClick={() => onMove(index, -1)}
-                disabled={isReordering || index === 0}
+                disabled={isReordering || deletingItemId !== null || index === 0}
               >
                 上へ
               </button>
@@ -164,7 +166,9 @@ const UserItemsList = ({
                 type="button"
                 className="btn-ghost btn-compact"
                 onClick={() => onMove(index, 1)}
-                disabled={isReordering || index === items.length - 1}
+                disabled={
+                  isReordering || deletingItemId !== null || index === items.length - 1
+                }
               >
                 下へ
               </button>
@@ -172,6 +176,7 @@ const UserItemsList = ({
                 type="button"
                 className="btn-danger btn-compact"
                 onClick={() => onDelete(item)}
+                disabled={deletingItemId !== null}
               >
                 消す
               </button>
@@ -190,6 +195,7 @@ const UserItemsList = ({
 type DeleteConfirmationDialogProps = {
   isOpen: boolean;
   dialogRef: RefObject<HTMLDivElement>;
+  isDeleting: boolean;
   onDelete: () => void;
   onCancel: () => void;
 };
@@ -197,6 +203,7 @@ type DeleteConfirmationDialogProps = {
 const DeleteConfirmationDialog = ({
   isOpen,
   dialogRef,
+  isDeleting,
   onDelete,
   onCancel
 }: DeleteConfirmationDialogProps) => {
@@ -209,10 +216,20 @@ const DeleteConfirmationDialog = ({
       <div className="dialog-card" ref={dialogRef}>
         <p className="dialog-title">このやることを消しますか？</p>
         <div className="dialog-actions">
-          <button type="button" className="btn-danger" onClick={onDelete}>
-            消す
+          <button
+            type="button"
+            className="btn-danger"
+            onClick={onDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "消しています..." : "消す"}
           </button>
-          <button type="button" className="btn-secondary" onClick={onCancel}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onCancel}
+            disabled={isDeleting}
+          >
             そのままにする
           </button>
         </div>
@@ -226,6 +243,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
   const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
   const [isReordering, setIsReordering] = useState(false);
+  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
@@ -346,6 +364,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     const targetId = deleteTarget.id;
     const previousItems = items;
 
+    setDeletingItemId(targetId);
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
     );
@@ -353,7 +372,8 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onError: () => setItems(previousItems)
+      onError: () => setItems(previousItems),
+      onFinish: () => setDeletingItemId(null)
     });
   }, [deleteTarget, items, user_list.id]);
 
@@ -395,6 +415,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
           items={items}
           isReordering={isReordering}
           updatingItemIds={updatingItemIds}
+          deletingItemId={deletingItemId}
           onToggle={handleToggle}
           onMove={handleMove}
           onDelete={confirmDelete}
@@ -407,6 +428,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
         <DeleteConfirmationDialog
           isOpen={Boolean(deleteTarget)}
           dialogRef={dialogRef}
+          isDeleting={deletingItemId !== null}
           onDelete={handleDelete}
           onCancel={closeDeleteDialog}
         />
