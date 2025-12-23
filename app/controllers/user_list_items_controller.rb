@@ -34,22 +34,15 @@ class UserListItemsController < ApplicationController
 
   def reorder
     item_ids = Array(params[:item_ids]).map(&:to_i).uniq
-
-    if item_ids.blank?
-      return redirect_to user_list_path(@user_list), alert: "並び替えに失敗しました"
-    end
-
     items = @user_list.user_list_items.where(id: item_ids)
-    if items.size != item_ids.size
+    if item_ids.blank? || items.size != item_ids.size
       return redirect_to user_list_path(@user_list), alert: "並び替えに失敗しました"
     end
 
     now = Time.current
     case_sql = item_ids.each_with_index.map { |id, index| "WHEN #{id} THEN #{index}" }.join(" ")
 
-    UserListItem
-      .where(id: item_ids, user_list_id: @user_list.id)
-      .update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
+    items.update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
 
     redirect_to user_list_path(@user_list)
   end

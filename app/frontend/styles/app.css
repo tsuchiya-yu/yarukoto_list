@@ -387,12 +387,8 @@ a {
   resize: vertical;
 }
 
+.form-field textarea:focus,
 .form-field input:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2);
-}
-
-.form-field textarea:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2);
 }

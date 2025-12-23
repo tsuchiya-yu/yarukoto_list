@@ -1,5 +1,5 @@
 import { router, useForm } from "@inertiajs/react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 
 import { FormErrorMessages } from "@/components/FormErrorMessages";
 import { PublicShell } from "@/components/PublicShell";
@@ -42,6 +42,16 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
     }
   });
   const formErrors = form_errors ?? {};
+
+  const handleFormChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setData("user_list_item", {
+      ...data.user_list_item,
+      [name]: value
+    });
+  };
 
   useEffect(() => {
     setItems(user_list.items);
@@ -158,12 +168,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
                 id="user-list-item-title"
                 name="title"
                 value={data.user_list_item.title}
-                onChange={(event) =>
-                  setData("user_list_item", {
-                    ...data.user_list_item,
-                    title: event.target.value
-                  })
-                }
+                onChange={handleFormChange}
                 placeholder="例：引越しの見積もりを取る"
               />
               <FormErrorMessages
@@ -177,12 +182,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
                 id="user-list-item-description"
                 name="description"
                 value={data.user_list_item.description}
-                onChange={(event) =>
-                  setData("user_list_item", {
-                    ...data.user_list_item,
-                    description: event.target.value
-                  })
-                }
+                onChange={handleFormChange}
                 placeholder="必要ならメモを残せます"
                 rows={3}
               />
