@@ -237,12 +237,15 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const handleFormChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = event.target;
-      setData("user_list_item", {
-        ...data.user_list_item,
-        [name]: value
-      });
+      setData((currentData) => ({
+        ...currentData,
+        user_list_item: {
+          ...currentData.user_list_item,
+          [name]: value
+        }
+      }));
     },
-    [data.user_list_item, setData]
+    [setData]
   );
 
   useEffect(() => {
