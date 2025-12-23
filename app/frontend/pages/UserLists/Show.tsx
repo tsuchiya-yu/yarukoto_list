@@ -267,8 +267,11 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   );
 
   useEffect(() => {
+    if (isReordering || updatingItemIds.length > 0 || deletingItemId !== null) {
+      return;
+    }
     setItems(user_list.items);
-  }, [user_list.items]);
+  }, [user_list.items, isReordering, updatingItemIds, deletingItemId]);
 
   const closeDeleteDialog = useCallback(() => setDeleteTarget(null), []);
 
