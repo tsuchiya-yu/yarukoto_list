@@ -1,5 +1,6 @@
 import { router, useForm } from "@inertiajs/react";
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -12,6 +13,7 @@ import { PublicShell } from "@/components/PublicShell";
 import { Seo, type SeoMeta } from "@/components/Seo";
 import { formatDate } from "@/lib/formatters";
 import { routes } from "@/lib/routes";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 import type { PageProps } from "@/types/page";
 
 type UserListItem = {
@@ -43,7 +45,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
   const [isReordering, setIsReordering] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
       title: "",
@@ -65,63 +66,9 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     setItems(user_list.items);
   }, [user_list.items]);
 
-  useEffect(() => {
-    if (!deleteTarget) {
-      return;
-    }
+  const closeDeleteDialog = useCallback(() => setDeleteTarget(null), []);
 
-    previousFocusRef.current = document.activeElement as HTMLElement | null;
-    const dialogElement = dialogRef.current;
-    const getFocusableElements = () =>
-      dialogElement
-        ? Array.from(
-            dialogElement.querySelectorAll<HTMLElement>(
-              "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-            )
-          ).filter((element) => !element.hasAttribute("disabled"))
-        : [];
-
-    const initialFocusable = getFocusableElements();
-    if (initialFocusable.length > 0) {
-      initialFocusable[0].focus();
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setDeleteTarget(null);
-        return;
-      }
-
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const focusableElements = getFocusableElements();
-      if (focusableElements.length === 0) {
-        return;
-      }
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (event.shiftKey) {
-        if (document.activeElement === firstElement) {
-          event.preventDefault();
-          lastElement?.focus();
-        }
-      } else if (document.activeElement === lastElement) {
-        event.preventDefault();
-        firstElement?.focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      previousFocusRef.current?.focus();
-    };
-  }, [deleteTarget]);
+  useFocusTrap(Boolean(deleteTarget), dialogRef, closeDeleteDialog);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -366,7 +313,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                 <button
                   type="button"
                   className="btn-secondary"
-                  onClick={() => setDeleteTarget(null)}
+                  onClick={closeDeleteDialog}
                 >
                   そのままにする
                 </button>

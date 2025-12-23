@@ -22,13 +22,12 @@ class UserListItemsController < ApplicationController
   end
 
   def update
-    if @user_list_item.update(update_params)
-      redirect_to user_list_path(@user_list)
-    else
-      render inertia: "UserLists/Show",
-             props: user_list_show_props(@user_list, errors: formatted_errors(@user_list_item)),
-             status: :unprocessable_entity
-    end
+    @user_list_item.update!(update_params)
+    redirect_to user_list_path(@user_list)
+  rescue ActiveRecord::RecordInvalid
+    render inertia: "UserLists/Show",
+           props: user_list_show_props(@user_list, errors: formatted_errors(@user_list_item)),
+           status: :unprocessable_entity
   end
 
   def destroy
