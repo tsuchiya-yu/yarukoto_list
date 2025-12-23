@@ -269,7 +269,8 @@ a {
 
 .btn-primary,
 .btn-secondary,
-.btn-ghost {
+.btn-ghost,
+.btn-danger {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -297,6 +298,12 @@ a {
   color: var(--color-accent);
   border-color: transparent;
   padding-left: 0;
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 
 .btn-compact {
@@ -370,7 +377,22 @@ a {
   background: #fff;
 }
 
+.form-field textarea {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+  resize: vertical;
+}
+
 .form-field input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2);
+}
+
+.form-field textarea:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2);
 }
@@ -568,6 +590,45 @@ a {
   background: #fcfdf7;
 }
 
+.user-list-items li.is-completed h3 {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+.user-list-item__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.item-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-badge-bg);
+  color: var(--color-badge-text);
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin: 0 0 0.5rem;
+}
+
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .timeline-step {
   font-size: 0.85rem;
   color: var(--color-accent);
@@ -623,6 +684,39 @@ a {
 .fixed-notice p {
   margin: 0;
   white-space: pre-line;
+}
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 10;
+}
+
+.dialog-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 1.75rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 18px 40px var(--color-shadow);
+  text-align: center;
+}
+
+.dialog-title {
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 720px) {

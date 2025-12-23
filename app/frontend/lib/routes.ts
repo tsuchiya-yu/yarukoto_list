@@ -14,6 +14,11 @@ const createRoutes = <T extends RouteConfig>(routes: T): RouteHelpers<T> =>
 export const routes = createRoutes({
   userLists: "/user_lists",
   userList: (id: number | string) => `/user_lists/${id}`,
+  userListItems: (listId: number | string) => `/user_lists/${listId}/items`,
+  userListItem: (listId: number | string, itemId: number | string) =>
+    `/user_lists/${listId}/items/${itemId}`,
+  userListItemsReorder: (listId: number | string) =>
+    `/user_lists/${listId}/items/reorder`,
   signup: "/signup",
   login: "/login",
   logout: "/logout"

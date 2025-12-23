@@ -24,7 +24,9 @@ class UserListPresenter
         {
           id: item.id,
           title: item.title,
-          description: item.description
+          description: item.description,
+          completed: item.completed,
+          position: item.position
         }
       end
     }
