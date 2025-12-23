@@ -126,19 +126,27 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       return;
     }
 
-    const previous = items;
     const nextCompleted = !target.completed;
-    const nextItems = items.map((item) =>
-      item.id === itemId ? { ...item, completed: nextCompleted } : item
+    setItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === itemId ? { ...item, completed: nextCompleted } : item
+      )
     );
-    setItems(nextItems);
 
     router.patch(
       routes.userListItem(user_list.id, itemId),
       { user_list_item: { completed: nextCompleted } },
       {
         preserveScroll: true,
-        onError: () => setItems(previous)
+        onError: () => {
+          setItems((currentItems) =>
+            currentItems.map((item) =>
+              item.id === itemId
+                ? { ...item, completed: !nextCompleted }
+                : item
+            )
+          );
+        }
       }
     );
   };
@@ -149,7 +157,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       return;
     }
 
-    const previousItems = items;
     const nextItems = [...items];
     const [moved] = nextItems.splice(index, 1);
     nextItems.splice(targetIndex, 0, moved);
@@ -159,8 +166,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       routes.userListItemsReorder(user_list.id),
       { item_ids: nextItems.map((item) => item.id) },
       {
-        preserveScroll: true,
-        onError: () => setItems(previousItems)
+        preserveScroll: true
       }
     );
   };
@@ -174,7 +180,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       return;
     }
 
-    const previousItems = items;
     const targetId = deleteTarget.id;
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
@@ -182,8 +187,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     setDeleteTarget(null);
 
     router.delete(routes.userListItem(user_list.id, targetId), {
-      preserveScroll: true,
-      onError: () => setItems(previousItems)
+      preserveScroll: true
     });
   };
 
