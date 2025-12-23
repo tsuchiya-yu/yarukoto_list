@@ -17,6 +17,11 @@ export function SiteHeader() {
           <Link href="/lists" className="nav-link">
             公開リスト
           </Link>
+          {user && (
+            <Link href={routes.userLists()} className="nav-link">
+              自分用リスト
+            </Link>
+          )}
           {!user ? (
             <div className="nav-actions">
               <Link href={routes.login()} className="btn-secondary btn-compact">

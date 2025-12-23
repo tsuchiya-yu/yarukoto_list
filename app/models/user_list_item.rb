@@ -1,5 +1,5 @@
 class UserListItem < ApplicationRecord
-  belongs_to :user_list
+  belongs_to :user_list, counter_cache: true
   belongs_to :template_item, optional: true
 
   validates :title, presence: true

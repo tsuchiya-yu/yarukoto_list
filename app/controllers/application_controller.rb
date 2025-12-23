@@ -49,6 +49,14 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def fixed_notice_text
+    <<~TEXT.strip
+      ※本サービスで提供されるやることリストは、一般的な情報をもとにした参考例です。
+      手続きの要否や内容は、契約内容・地域・個別状況によって異なる場合があります。
+      必ず公式サイトや契約書などの一次情報もあわせてご確認ください。
+    TEXT
+  end
+
   def user_payload(user)
     {
       id: user.id,

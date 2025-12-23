@@ -209,6 +209,11 @@ a {
   gap: 1.25rem;
 }
 
+.template-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .template-card {
   border: 1px solid var(--color-border);
   border-radius: 18px;

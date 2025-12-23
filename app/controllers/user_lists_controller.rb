@@ -1,21 +1,51 @@
 class UserListsController < ApplicationController
+  def index
+    user_lists =
+      current_user
+      .user_lists
+      .order(created_at: :desc)
+
+    render inertia: "UserLists/Index", props: {
+      user_lists: user_lists.map { |list| UserListPresenter.new(list).summary },
+      fixed_notice: fixed_notice_text,
+      meta: meta_payload(
+        "自分用リスト",
+        "自分用に追加したリストを一覧で確認できます。"
+      )
+    }
+  end
+
+  def show
+    user_list = current_user.user_lists.includes(:user_list_items).find(params[:id])
+
+    render inertia: "UserLists/Show", props: {
+      user_list: UserListPresenter.new(user_list).detail,
+      fixed_notice: fixed_notice_text,
+      meta: meta_payload(
+        "自分用リスト",
+        "自分用に追加したリストの内容を確認できます。"
+      )
+    }
+  end
+
   def create
     template = Template.includes(:template_items).find(params[:template_id])
     UserList.transaction do
-      lists = current_user.user_lists.lock
-      if lists.exists?(template: template)
-        return redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
-      end
+      current_user.with_lock do
+        if current_user.user_lists.exists?(template: template)
+          return redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
+        end
 
-      copy_template_for(template)
+        copy_template_for(template)
+      end
     end
 
-    redirect_to public_template_path(template), notice: "自分用リストを作成しました"
+    redirect_to user_lists_path, notice: "自分用リストを作成しました"
   rescue ActiveRecord::RecordInvalid
-    redirect_to public_template_path(template), alert: "自分用へのコピーに失敗しました"
+    redirect_to user_lists_path, alert: "自分用へのコピーに失敗しました"
   rescue ActiveRecord::RecordNotUnique
-    redirect_to public_template_path(template), notice: "このリストはすでに自分用に追加済みです"
-  rescue ActiveRecord::RecordNotFound
+    redirect_to user_lists_path, notice: "このリストはすでに自分用に追加済みです"
+  rescue ActiveRecord::InvalidForeignKey, ActiveRecord::RecordNotFound
     redirect_to public_templates_path, alert: "指定したやることリストが見つかりませんでした"
   end
 
@@ -50,6 +80,6 @@ class UserListsController < ApplicationController
   end
 
   def next_position
-    current_user.user_lists.lock.maximum(:position).to_i + 1
+    current_user.user_lists.lock.order(position: :desc).limit(1).pick(:position).to_i + 1
   end
 end
