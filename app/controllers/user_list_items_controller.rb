@@ -23,7 +23,7 @@ class UserListItemsController < ApplicationController
 
   def update
     @user_list_item.update!(update_params)
-    redirect_to user_list_path(@user_list)
+    redirect_to user_list_path(@user_list), notice: "やることを更新しました"
   rescue ActiveRecord::RecordInvalid
     render inertia: "UserLists/Show",
            props: user_list_show_props(@user_list, errors: formatted_errors(@user_list_item)),
@@ -53,7 +53,7 @@ class UserListItemsController < ApplicationController
 
     items.update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
 
-    redirect_to user_list_path(@user_list)
+    redirect_to user_list_path(@user_list), notice: "並び順を保存しました"
   end
 
   private
