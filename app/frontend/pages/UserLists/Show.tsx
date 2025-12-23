@@ -42,7 +42,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
   const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
   const [isReordering, setIsReordering] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
@@ -203,19 +202,16 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     }
 
     const targetId = deleteTarget.id;
-    setIsDeleting(true);
+    const previousItems = items;
+
+    setItems((currentItems) =>
+      currentItems.filter((item) => item.id !== targetId)
+    );
+    setDeleteTarget(null);
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onSuccess: () => {
-        setItems((currentItems) =>
-          currentItems.filter((item) => item.id !== targetId)
-        );
-        setDeleteTarget(null);
-      },
-      onFinish: () => {
-        setIsDeleting(false);
-      }
+      onError: () => setItems(previousItems)
     });
   };
 
@@ -364,15 +360,13 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                   type="button"
                   className="btn-danger"
                   onClick={handleDelete}
-                  disabled={isDeleting}
                 >
-                  {isDeleting ? "消しています..." : "消す"}
+                  消す
                 </button>
                 <button
                   type="button"
                   className="btn-secondary"
                   onClick={() => setDeleteTarget(null)}
-                  disabled={isDeleting}
                 >
                   そのままにする
                 </button>
