@@ -119,9 +119,18 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       return;
     }
 
-    router.delete(routes.userListItem(user_list.id, deleteTarget.id), {
+    const previousItems = items;
+    const targetId = deleteTarget.id;
+    setItems((currentItems) =>
+      currentItems.filter((item) => item.id !== targetId)
+    );
+    setDeleteTarget(null);
+
+    router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onFinish: () => setDeleteTarget(null)
+      onError: () => {
+        setItems(previousItems);
+      }
     });
   };
 

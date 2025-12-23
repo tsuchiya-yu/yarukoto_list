@@ -5,16 +5,20 @@ class UserListItemsController < ApplicationController
   def create
     item =
       @user_list.user_list_items.new(
-        user_list_item_params.merge(position: next_position_for(@user_list))
+        user_list_item_params
       )
 
-    if item.save
-      redirect_to user_list_path(@user_list), notice: "やることを追加しました"
-    else
-      render inertia: "UserLists/Show",
-             props: show_props(@user_list, errors: formatted_errors(item)),
-             status: :unprocessable_entity
+    UserListItem.transaction do
+      @user_list.lock!
+      item.position = (@user_list.user_list_items.maximum(:position) || -1) + 1
+      item.save!
     end
+
+    redirect_to user_list_path(@user_list), notice: "やることを追加しました"
+  rescue ActiveRecord::RecordInvalid
+    render inertia: "UserLists/Show",
+           props: show_props(@user_list, errors: formatted_errors(item)),
+           status: :unprocessable_entity
   end
 
   def update
@@ -63,10 +67,6 @@ class UserListItemsController < ApplicationController
 
   def update_params
     params.require(:user_list_item).permit(:completed)
-  end
-
-  def next_position_for(user_list)
-    user_list.user_list_items.lock.order(position: :desc).limit(1).pick(:position).to_i + 1
   end
 
   def show_props(user_list, errors: {})
