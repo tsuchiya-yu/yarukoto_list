@@ -94,7 +94,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       return;
     }
 
-    const previous = items;
     const nextItems = [...items];
     const [moved] = nextItems.splice(index, 1);
     nextItems.splice(targetIndex, 0, moved);
@@ -105,7 +104,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       { item_ids: nextItems.map((item) => item.id) },
       {
         preserveScroll: true,
-        onError: () => setItems(previous)
+        onError: () => router.reload({ only: ["user_list"], preserveScroll: true })
       }
     );
   };
@@ -119,7 +118,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       return;
     }
 
-    const previousItems = items;
     const targetId = deleteTarget.id;
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
@@ -128,9 +126,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onError: () => {
-        setItems(previousItems);
-      }
+      onError: () => router.reload({ only: ["user_list"], preserveScroll: true })
     });
   };
 

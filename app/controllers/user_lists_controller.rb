@@ -18,15 +18,7 @@ class UserListsController < ApplicationController
   def show
     user_list = current_user.user_lists.includes(:user_list_items).find(params[:id])
 
-    render inertia: "UserLists/Show", props: {
-      user_list: UserListPresenter.new(user_list).detail,
-      fixed_notice: fixed_notice_text,
-      form_errors: {},
-      meta: meta_payload(
-        "自分用リスト",
-        "自分用に追加したリストの内容を確認できます。"
-      )
-    }
+    render inertia: "UserLists/Show", props: user_list_show_props(user_list)
   end
 
   def create

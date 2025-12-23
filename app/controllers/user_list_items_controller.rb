@@ -17,7 +17,7 @@ class UserListItemsController < ApplicationController
     redirect_to user_list_path(@user_list), notice: "やることを追加しました"
   rescue ActiveRecord::RecordInvalid
     render inertia: "UserLists/Show",
-           props: show_props(@user_list, errors: formatted_errors(item)),
+           props: user_list_show_props(@user_list, errors: formatted_errors(item)),
            status: :unprocessable_entity
   end
 
@@ -26,7 +26,7 @@ class UserListItemsController < ApplicationController
       redirect_to user_list_path(@user_list)
     else
       render inertia: "UserLists/Show",
-             props: show_props(@user_list, errors: formatted_errors(@user_list_item)),
+             props: user_list_show_props(@user_list, errors: formatted_errors(@user_list_item)),
              status: :unprocessable_entity
     end
   end
@@ -67,18 +67,6 @@ class UserListItemsController < ApplicationController
 
   def update_params
     params.require(:user_list_item).permit(:completed)
-  end
-
-  def show_props(user_list, errors: {})
-    {
-      user_list: UserListPresenter.new(user_list).detail,
-      fixed_notice: fixed_notice_text,
-      meta: meta_payload(
-        "自分用リスト",
-        "自分用に追加したリストの内容を確認できます。"
-      ),
-      form_errors: errors
-    }
   end
 
   def formatted_errors(record)
