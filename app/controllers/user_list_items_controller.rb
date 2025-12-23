@@ -44,7 +44,9 @@ class UserListItemsController < ApplicationController
       .filter_map { |id| Integer(id, 10) rescue nil }
       .uniq
     items = @user_list.user_list_items.where(id: item_ids)
-    if item_ids.blank? || items.size != item_ids.size
+    if item_ids.blank? ||
+       items.size != item_ids.size ||
+       items.size != @user_list.user_list_items.size
       return redirect_to user_list_path(@user_list), alert: "並び替えに失敗しました"
     end
 
