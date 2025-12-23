@@ -47,7 +47,8 @@ class UserListItemsController < ApplicationController
     if item_ids.blank? ||
        items.size != item_ids.size ||
        items.size != @user_list.user_list_items.size
-      return redirect_to user_list_path(@user_list), alert: "並び替えに失敗しました"
+      return redirect_to user_list_path(@user_list),
+                         alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
     end
 
     now = Time.current
