@@ -234,15 +234,16 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     }
   });
 
-  const handleFormChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.target;
-    setData("user_list_item", {
-      ...data.user_list_item,
-      [name]: value
-    });
-  };
+  const handleFormChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = event.target;
+      setData("user_list_item", {
+        ...data.user_list_item,
+        [name]: value
+      });
+    },
+    [data.user_list_item, setData]
+  );
 
   useEffect(() => {
     setItems(user_list.items);
@@ -252,80 +253,89 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
   useFocusTrap(Boolean(deleteTarget), dialogRef, closeDeleteDialog);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    post(routes.userListItems(user_list.id), {
-      preserveScroll: true,
-      onSuccess: () => reset()
-    });
-  };
-
-  const handleToggle = (itemId: number) => {
-    const target = items.find((item) => item.id === itemId);
-    if (!target) {
-      return;
-    }
-
-    const nextCompleted = !target.completed;
-    setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === itemId ? { ...item, completed: nextCompleted } : item
-      )
-    );
-
-    router.patch(
-      routes.userListItem(user_list.id, itemId),
-      { user_list_item: { completed: nextCompleted } },
-      {
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      post(routes.userListItems(user_list.id), {
         preserveScroll: true,
-        onStart: () => {
-          setUpdatingItemIds((ids) => [...ids, itemId]);
-        },
-        onFinish: () => {
-          setUpdatingItemIds((ids) => ids.filter((id) => id !== itemId));
-        },
-        onError: () => {
-          setItems((currentItems) =>
-            currentItems.map((item) =>
-              item.id === itemId
-                ? { ...item, completed: !nextCompleted }
-                : item
-            )
-          );
+        onSuccess: () => reset()
+      });
+    },
+    [post, reset, user_list.id]
+  );
+
+  const handleToggle = useCallback(
+    (itemId: number) => {
+      const target = items.find((item) => item.id === itemId);
+      if (!target) {
+        return;
+      }
+
+      const nextCompleted = !target.completed;
+      setItems((currentItems) =>
+        currentItems.map((item) =>
+          item.id === itemId ? { ...item, completed: nextCompleted } : item
+        )
+      );
+
+      router.patch(
+        routes.userListItem(user_list.id, itemId),
+        { user_list_item: { completed: nextCompleted } },
+        {
+          preserveScroll: true,
+          onStart: () => {
+            setUpdatingItemIds((ids) => [...ids, itemId]);
+          },
+          onFinish: () => {
+            setUpdatingItemIds((ids) => ids.filter((id) => id !== itemId));
+          },
+          onError: () => {
+            setItems((currentItems) =>
+              currentItems.map((item) =>
+                item.id === itemId
+                  ? { ...item, completed: !nextCompleted }
+                  : item
+              )
+            );
+          }
         }
+      );
+    },
+    [items, user_list.id]
+  );
+
+  const handleMove = useCallback(
+    (index: number, direction: number) => {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= items.length) {
+        return;
       }
-    );
-  };
 
-  const handleMove = (index: number, direction: number) => {
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= items.length) {
-      return;
-    }
+      const previousItems = items;
+      const nextItems = [...items];
+      const [moved] = nextItems.splice(index, 1);
+      nextItems.splice(targetIndex, 0, moved);
+      setItems(nextItems);
 
-    const previousItems = items;
-    const nextItems = [...items];
-    const [moved] = nextItems.splice(index, 1);
-    nextItems.splice(targetIndex, 0, moved);
-    setItems(nextItems);
+      router.patch(
+        routes.userListItemsReorder(user_list.id),
+        { item_ids: nextItems.map((item) => item.id) },
+        {
+          preserveScroll: true,
+          onStart: () => setIsReordering(true),
+          onFinish: () => setIsReordering(false),
+          onError: () => setItems(previousItems)
+        }
+      );
+    },
+    [items, user_list.id]
+  );
 
-    router.patch(
-      routes.userListItemsReorder(user_list.id),
-      { item_ids: nextItems.map((item) => item.id) },
-      {
-        preserveScroll: true,
-        onStart: () => setIsReordering(true),
-        onFinish: () => setIsReordering(false),
-        onError: () => setItems(previousItems)
-      }
-    );
-  };
-
-  const confirmDelete = (item: UserListItem) => {
+  const confirmDelete = useCallback((item: UserListItem) => {
     setDeleteTarget(item);
-  };
+  }, []);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!deleteTarget) {
       return;
     }
@@ -342,7 +352,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       preserveScroll: true,
       onError: () => setItems(previousItems)
     });
-  };
+  }, [deleteTarget, items, user_list.id]);
 
   return (
     <>
