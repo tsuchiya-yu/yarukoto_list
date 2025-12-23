@@ -6,7 +6,7 @@ import { PublicShell } from "@/components/PublicShell";
 import { Seo, type SeoMeta } from "@/components/Seo";
 import { formatDate } from "@/lib/formatters";
 import { routes } from "@/lib/routes";
-import type { PageProps, SharedErrors } from "@/types/page";
+import type { PageProps } from "@/types/page";
 
 type UserListItem = {
   id: number;
@@ -29,19 +29,17 @@ type Props = PageProps<{
   user_list: UserListDetail;
   fixed_notice: string;
   meta: SeoMeta;
-  form_errors?: SharedErrors;
 }>;
 
-export default function UserListsShow({ user_list, fixed_notice, meta, form_errors }: Props) {
+export default function UserListsShow({ user_list, fixed_notice, meta }: Props) {
   const [items, setItems] = useState(user_list.items);
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
-  const { data, setData, post, processing, reset } = useForm({
+  const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
       title: "",
       description: ""
     }
   });
-  const formErrors = form_errors ?? {};
 
   const handleFormChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -94,6 +92,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       return;
     }
 
+    const previousItems = items;
     const nextItems = [...items];
     const [moved] = nextItems.splice(index, 1);
     nextItems.splice(targetIndex, 0, moved);
@@ -104,7 +103,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       { item_ids: nextItems.map((item) => item.id) },
       {
         preserveScroll: true,
-        onError: () => router.reload({ only: ["user_list"], preserveScroll: true })
+        onError: () => setItems(previousItems)
       }
     );
   };
@@ -118,6 +117,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
       return;
     }
 
+    const previousItems = items;
     const targetId = deleteTarget.id;
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
@@ -126,7 +126,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onError: () => router.reload({ only: ["user_list"], preserveScroll: true })
+      onError: () => setItems(previousItems)
     });
   };
 
@@ -163,7 +163,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
           </header>
           <form onSubmit={handleSubmit} className="item-form">
             <FormErrorMessages
-              messages={formErrors.base}
+              messages={errors.base}
               variant="form"
               keyPrefix="user-list-item-form"
             />
@@ -177,7 +177,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
                 placeholder="例：引越しの見積もりを取る"
               />
               <FormErrorMessages
-                messages={formErrors.title}
+                messages={errors.title}
                 keyPrefix="user-list-item-title"
               />
             </div>
@@ -192,7 +192,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta, form_erro
                 rows={3}
               />
               <FormErrorMessages
-                messages={formErrors.description}
+                messages={errors.description}
                 keyPrefix="user-list-item-description"
               />
             </div>

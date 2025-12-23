@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
         "自分用リスト",
         "自分用に追加したリストの内容を確認できます。"
       ),
-      form_errors: errors
+      errors: errors
     }
   end
 
