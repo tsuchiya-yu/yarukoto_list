@@ -40,6 +40,9 @@ type Props = PageProps<{
 export default function UserListsShow({ user_list, fixed_notice, meta }: Props) {
   const [items, setItems] = useState(user_list.items);
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
+  const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
+  const [isReordering, setIsReordering] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
@@ -138,6 +141,12 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       { user_list_item: { completed: nextCompleted } },
       {
         preserveScroll: true,
+        onStart: () => {
+          setUpdatingItemIds((ids) => [...ids, itemId]);
+        },
+        onFinish: () => {
+          setUpdatingItemIds((ids) => ids.filter((id) => id !== itemId));
+        },
         onError: () => {
           setItems((currentItems) =>
             currentItems.map((item) =>
@@ -168,6 +177,8 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       { item_ids: nextItems.map((item) => item.id) },
       {
         preserveScroll: true,
+        onStart: () => setIsReordering(true),
+        onFinish: () => setIsReordering(false),
         onError: () => setItems(previousItems)
       }
     );
@@ -182,16 +193,20 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       return;
     }
 
-    const previousItems = items;
     const targetId = deleteTarget.id;
-    setItems((currentItems) =>
-      currentItems.filter((item) => item.id !== targetId)
-    );
-    setDeleteTarget(null);
+    setIsDeleting(true);
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onError: () => setItems(previousItems)
+      onSuccess: () => {
+        setItems((currentItems) =>
+          currentItems.filter((item) => item.id !== targetId)
+        );
+        setDeleteTarget(null);
+      },
+      onFinish: () => {
+        setIsDeleting(false);
+      }
     });
   };
 
@@ -289,6 +304,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                       className="btn-secondary btn-compact"
                       onClick={() => handleToggle(item.id)}
                       aria-pressed={item.completed}
+                      disabled={updatingItemIds.includes(item.id)}
                     >
                       {item.completed ? "未完了に戻す" : "完了にする"}
                     </button>
@@ -296,7 +312,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                       type="button"
                       className="btn-ghost btn-compact"
                       onClick={() => handleMove(index, -1)}
-                      disabled={index === 0}
+                      disabled={isReordering || index === 0}
                     >
                       上へ
                     </button>
@@ -304,7 +320,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                       type="button"
                       className="btn-ghost btn-compact"
                       onClick={() => handleMove(index, 1)}
-                      disabled={index === items.length - 1}
+                      disabled={isReordering || index === items.length - 1}
                     >
                       下へ
                     </button>
@@ -335,13 +351,19 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
             <div className="dialog-card" ref={dialogRef}>
               <p className="dialog-title">このやることを消しますか？</p>
               <div className="dialog-actions">
-                <button type="button" className="btn-danger" onClick={handleDelete}>
-                  消す
+                <button
+                  type="button"
+                  className="btn-danger"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "消しています..." : "消す"}
                 </button>
                 <button
                   type="button"
                   className="btn-secondary"
                   onClick={() => setDeleteTarget(null)}
+                  disabled={isDeleting}
                 >
                   そのままにする
                 </button>
