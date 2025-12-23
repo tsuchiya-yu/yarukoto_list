@@ -32,12 +32,18 @@ class UserListItemsController < ApplicationController
   end
 
   def destroy
-    @user_list_item.destroy!
-    redirect_to user_list_path(@user_list), notice: "やることを消しました"
+    if @user_list_item.destroy
+      redirect_to user_list_path(@user_list), notice: "やることを消しました"
+    else
+      redirect_to user_list_path(@user_list), alert: "やることを消せませんでした"
+    end
   end
 
   def reorder
-    item_ids = Array(params[:item_ids]).map(&:to_i).uniq
+    item_ids =
+      Array(params[:item_ids])
+      .filter_map { |id| Integer(id, 10) rescue nil }
+      .uniq
     items = @user_list.user_list_items.where(id: item_ids)
     if item_ids.blank? || items.size != item_ids.size
       return redirect_to user_list_path(@user_list), alert: "並び替えに失敗しました"

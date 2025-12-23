@@ -1,5 +1,11 @@
 import { router, useForm } from "@inertiajs/react";
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent
+} from "react";
 
 import { FormErrorMessages } from "@/components/FormErrorMessages";
 import { PublicShell } from "@/components/PublicShell";
@@ -34,6 +40,8 @@ type Props = PageProps<{
 export default function UserListsShow({ user_list, fixed_notice, meta }: Props) {
   const [items, setItems] = useState(user_list.items);
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
       title: "",
@@ -54,6 +62,55 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   useEffect(() => {
     setItems(user_list.items);
   }, [user_list.items]);
+
+  useEffect(() => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const dialogElement = dialogRef.current;
+    const focusableElements = dialogElement
+      ? Array.from(
+          dialogElement.querySelectorAll<HTMLElement>(
+            "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+          )
+        ).filter((element) => !element.hasAttribute("disabled"))
+      : [];
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (firstElement) {
+      firstElement.focus();
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setDeleteTarget(null);
+        return;
+      }
+
+      if (event.key !== "Tab" || focusableElements.length === 0) {
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
+  }, [deleteTarget]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -267,7 +324,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
         {deleteTarget && (
           <div className="dialog-overlay" role="dialog" aria-modal="true">
-            <div className="dialog-card">
+            <div className="dialog-card" ref={dialogRef}>
               <p className="dialog-title">このやることを消しますか？</p>
               <div className="dialog-actions">
                 <button type="button" className="btn-danger" onClick={handleDelete}>
