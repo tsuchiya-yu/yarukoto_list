@@ -12,15 +12,7 @@ class TemplateReviewsController < ApplicationController
     rating = current_user.template_ratings.find_or_initialize_by(template: @template)
     rating.score = review_params[:score]
 
-    if review.valid? && rating.valid?
-      TemplateReview.transaction do
-        review.save!
-        rating.save!
-      end
-      return redirect_to public_template_path(@template), notice: "レビューを投稿しました"
-    end
-
-    render_review_errors(review: review, rating: rating)
+    save_review_and_rating(review: review, rating: rating, notice: "レビューを投稿しました")
   end
 
   def update
@@ -29,15 +21,7 @@ class TemplateReviewsController < ApplicationController
     @rating ||= current_user.template_ratings.build(template: @template)
     @rating.assign_attributes(score: review_params[:score])
 
-    if @review.valid? && @rating.valid?
-      TemplateReview.transaction do
-        @review.save!
-        @rating.save!
-      end
-      return redirect_to public_template_path(@template), notice: "レビューを更新しました"
-    end
-
-    render_review_errors(review: @review, rating: @rating)
+    save_review_and_rating(review: @review, rating: @rating, notice: "レビューを更新しました")
   end
 
   def destroy
@@ -81,6 +65,18 @@ class TemplateReviewsController < ApplicationController
     render inertia: "Public/Templates/Show",
            props: public_template_show_props(@template, errors: errors),
            status: :unprocessable_entity
+  end
+
+  def save_review_and_rating(review:, rating:, notice:)
+    if review.valid? && rating.valid?
+      TemplateReview.transaction do
+        review.save!
+        rating.save!
+      end
+      redirect_to public_template_path(@template), notice: notice
+    else
+      render_review_errors(review: review, rating: rating)
+    end
   end
 
   def handle_record_not_unique
