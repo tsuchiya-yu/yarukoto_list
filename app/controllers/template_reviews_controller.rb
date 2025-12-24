@@ -82,12 +82,8 @@ class TemplateReviewsController < ApplicationController
   def render_review_errors(review: nil, rating: nil, base: nil)
     errors = {}
     errors[:base] = base if base.present?
-    if review&.errors&.dig(:content).present?
-      errors[:content] = review.errors[:content]
-    end
-    if rating&.errors&.dig(:score).present?
-      errors[:score] = rating.errors[:score]
-    end
+    errors[:content] = review.errors[:content] if review&.errors&.key?(:content)
+    errors[:score] = rating.errors[:score] if rating&.errors&.key?(:score)
     render inertia: "Public/Templates/Show",
            props: public_template_show_props(@template, errors: errors),
            status: :unprocessable_entity
