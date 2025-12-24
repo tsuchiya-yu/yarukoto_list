@@ -414,7 +414,9 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
             </div>
           </header>
           <FormErrorMessages
-            messages={[pageError, ...sharedBaseMessages].filter(Boolean) as string[]}
+            messages={[pageError, ...sharedBaseMessages].filter(
+              (message): message is string => Boolean(message)
+            )}
             variant="form"
             keyPrefix="user-list-base"
           />
