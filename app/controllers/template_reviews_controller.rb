@@ -44,8 +44,8 @@ class TemplateReviewsController < ApplicationController
   end
 
   def set_review_and_rating
-    @review = current_user.template_reviews.find_by(template: @template)
-    @rating = current_user.template_ratings.find_by(template: @template)
+    @review = @template.template_reviews.find { |review| review.user_id == current_user.id }
+    @rating = @template.template_ratings.find { |rating| rating.user_id == current_user.id }
   end
 
   def review_params

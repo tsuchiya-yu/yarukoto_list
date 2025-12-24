@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   end
 
   resources :templates, only: [] do
-    resource :review, controller: "template_reviews", only: %i[create update destroy]
+    resource :template_review, controller: "template_reviews", only: %i[create update destroy]
   end
 
   scope module: :public do
