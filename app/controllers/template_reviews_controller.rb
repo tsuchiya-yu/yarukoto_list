@@ -32,13 +32,14 @@ class TemplateReviewsController < ApplicationController
   end
 
   def update
-    if @review.nil? || @rating.nil?
+    if @review.nil?
       return render_review_errors(
         base: "編集するレビューが見つかりませんでした。ページを再読み込みしてください。"
       )
     end
 
     @review.assign_attributes(content: review_params[:content])
+    @rating ||= current_user.template_ratings.build(template: @template)
     @rating.assign_attributes(score: review_params[:score])
 
     if @review.valid? && @rating.valid?
@@ -53,12 +54,6 @@ class TemplateReviewsController < ApplicationController
   end
 
   def destroy
-    if @review.nil? || @rating.nil?
-      return render_review_errors(
-        base: "削除するレビューが見つかりませんでした。ページを再読み込みしてください。"
-      )
-    end
-
     TemplateReview.transaction do
       @review&.destroy!
       @rating&.destroy!

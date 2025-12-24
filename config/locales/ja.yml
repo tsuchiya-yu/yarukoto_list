@@ -2,3 +2,7 @@ ja:
   errors:
     messages:
       review_already_exists: "このリストへのレビューはすでに投稿済みです。内容を編集してください。"
+      review_content_blank: "レビューを入力してください。"
+      review_content_too_long: "レビューは1000文字以内で入力してください。"
+      rating_score_invalid: "★評価は1〜5で選んでください。"
+      rating_already_exists: "このリストへの★評価はすでに投稿済みです。内容を編集してください。"
