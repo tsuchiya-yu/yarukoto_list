@@ -1,6 +1,6 @@
 class UserListItemsController < ApplicationController
   before_action :set_user_list
-  before_action :set_user_list_item, only: %i[update destroy toggle]
+  before_action :set_user_list_item, only: %i[destroy toggle]
 
   def create
     item =
@@ -19,15 +19,6 @@ class UserListItemsController < ApplicationController
     @user_list.user_list_items.reload
     render inertia: "UserLists/Show",
            props: user_list_show_props(@user_list, errors: formatted_errors(item)),
-           status: :unprocessable_entity
-  end
-
-  def update
-    @user_list_item.update!(update_params)
-    redirect_to user_list_path(@user_list), notice: "やることを更新しました"
-  rescue ActiveRecord::RecordInvalid
-    render inertia: "UserLists/Show",
-           props: user_list_show_props(@user_list, errors: formatted_errors(@user_list_item)),
            status: :unprocessable_entity
   end
 
@@ -103,10 +94,6 @@ class UserListItemsController < ApplicationController
 
   def user_list_item_params
     params.require(:user_list_item).permit(:title, :description)
-  end
-
-  def update_params
-    params.require(:user_list_item).permit(:completed)
   end
 
   def formatted_errors(record)

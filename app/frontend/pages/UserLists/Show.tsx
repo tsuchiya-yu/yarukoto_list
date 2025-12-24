@@ -246,6 +246,9 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const [isReordering, setIsReordering] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
   const [pageError, setPageError] = useState<string | null>(null);
+  const sharedBaseMessages = sharedErrors?.base
+    ? ([] as string[]).concat(sharedErrors.base)
+    : [];
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
@@ -411,7 +414,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
           <FormErrorMessages
             messages={[
               ...(pageError ? [pageError] : []),
-              ...(sharedErrors?.base ? [sharedErrors.base] : [])
+              ...sharedBaseMessages
             ]}
             variant="form"
             keyPrefix="user-list-base"

@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   post "/signup", to: "registrations#create"
 
   resources :user_lists, only: %i[index show create] do
-    resources :items, controller: "user_list_items", only: %i[create update destroy] do
+    resources :items, controller: "user_list_items", only: %i[create destroy] do
       patch :reorder, on: :collection
       patch :toggle, on: :member
     end
