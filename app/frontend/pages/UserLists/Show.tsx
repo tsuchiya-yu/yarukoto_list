@@ -371,12 +371,14 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
     );
-    setDeleteTarget(null);
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
       onError: () => setItems(previousItems),
-      onFinish: () => setDeletingItemId(null)
+      onFinish: () => {
+        setDeletingItemId(null);
+        setDeleteTarget(null);
+      }
     });
   }, [deleteTarget, items, user_list.id]);
 
