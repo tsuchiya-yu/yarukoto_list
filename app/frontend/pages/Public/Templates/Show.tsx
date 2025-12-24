@@ -111,7 +111,7 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
         content: currentReview?.content ?? ""
       }
     });
-  }, [currentReview?.id, currentReview?.score, currentReview?.content, isDirty, setData]);
+  }, [currentReview, isDirty, setData]);
 
   const handleReviewChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) => {

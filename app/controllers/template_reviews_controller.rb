@@ -38,6 +38,8 @@ class TemplateReviewsController < ApplicationController
     end
 
     render_review_errors(review: @review, rating: @rating)
+  rescue ActiveRecord::RecordNotUnique
+    render_review_errors(base: I18n.t("errors.messages.review_or_rating_already_exists"))
   end
 
   def destroy
