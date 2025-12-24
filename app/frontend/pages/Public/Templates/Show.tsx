@@ -1,5 +1,12 @@
 import { Link, router, useForm, usePage } from "@inertiajs/react";
-import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type FormEvent
+} from "react";
 
 import { FormErrorMessages } from "@/components/FormErrorMessages";
 import { PublicShell } from "@/components/PublicShell";
@@ -80,13 +87,13 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
   const ctaMessage = isLoggedIn
     ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
     : template.cta.message;
-  const baseMessages = (() => {
+  const baseMessages = useMemo(() => {
     const base = errors.base || sharedErrors?.base;
     if (!base) {
       return [];
     }
     return Array.isArray(base) ? base : [base];
-  })();
+  }, [errors.base, sharedErrors?.base]);
 
   useEffect(() => {
     setData({

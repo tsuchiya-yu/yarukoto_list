@@ -62,7 +62,7 @@ class TemplateReviewsController < ApplicationController
     redirect_to public_template_path(@template), notice: "レビューを削除しました"
   rescue ActiveRecord::RecordNotDestroyed
     render_review_errors(
-      base: "レビューを削除できませんでした。時間をおいて再度お試しください。"
+      base: I18n.t("errors.messages.review_not_destroyed")
     )
   end
 
@@ -94,12 +94,6 @@ class TemplateReviewsController < ApplicationController
     if rating&.errors&.dig(:score).present?
       errors[:score] = rating.errors[:score]
     end
-    if errors[:base].blank?
-      reviewer_duplicate = review&.errors&.dig(:user_id)&.first
-      rating_duplicate = rating&.errors&.dig(:user_id)&.first
-      errors[:base] = reviewer_duplicate || rating_duplicate if reviewer_duplicate || rating_duplicate
-    end
-
     render inertia: "Public/Templates/Show",
            props: public_template_show_props(@template, errors: errors),
            status: :unprocessable_entity

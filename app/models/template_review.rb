@@ -5,9 +5,15 @@ class TemplateReview < ApplicationRecord
   validates :content,
             presence: { message: I18n.t("errors.messages.review_content_blank") },
             length: { maximum: 1000, message: I18n.t("errors.messages.review_content_too_long") }
-  validates :user_id,
-            uniqueness: {
-              scope: :template_id,
-              message: I18n.t("errors.messages.review_already_exists")
-            }
+  validate :ensure_uniqueness_on_create, on: :create
+
+  private
+
+  def ensure_uniqueness_on_create
+    return if user_id.blank? || template_id.blank?
+
+    if self.class.exists?(user_id: user_id, template_id: template_id)
+      errors.add(:base, I18n.t("errors.messages.review_already_exists"))
+    end
+  end
 end
