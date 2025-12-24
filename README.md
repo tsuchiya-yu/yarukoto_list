@@ -47,6 +47,16 @@ Docker など別のレンジからアクセスしたい場合は、カンマ区�
 - `app/frontend/pages` : Inertiaページ（React + TypeScript）
 - `ssr/server.tsx` : `@inertiajs/server` を使ったSSRサーバー
 
+## 主要モデルとリレーション
+
+- `User` : `Template` / `TemplateReview` / `TemplateRating` / `UserList` を保有
+- `Template` : `User` に所属し、`TemplateItem` / `TemplateReview` / `TemplateRating` / `UserList` を持つ
+- `TemplateItem` : `Template` に所属し、`UserListItem` を参照可能（削除時は `UserListItem` を `nullify`）
+- `TemplateReview` : `Template` と `User` に所属（1ユーザー1レビュー）
+- `TemplateRating` : `Template` と `User` に所属（1ユーザー1評価）
+- `UserList` : `User` と `Template` に所属し、`UserListItem` を順序付きで保持
+- `UserListItem` : `UserList` に所属（`counter_cache`）、`TemplateItem` は任意で紐づく
+
 ### Makefile ヘルパー
 
 - `make dev` : `docker compose up web vite ssr`
