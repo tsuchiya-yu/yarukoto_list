@@ -1,6 +1,6 @@
 class UserListItemsController < ApplicationController
   before_action :set_user_list
-  before_action :set_user_list_item, only: %i[update destroy]
+  before_action :set_user_list_item, only: %i[destroy toggle]
 
   def create
     item =
@@ -10,20 +10,21 @@ class UserListItemsController < ApplicationController
 
     UserListItem.transaction do
       @user_list.lock!
-      item.position = (@user_list.user_list_items.maximum(:position) || -1) + 1
+      item.position = @user_list.user_list_items.maximum(:position).to_i + 1
       item.save!
     end
 
     redirect_to user_list_path(@user_list), notice: "やることを追加しました"
   rescue ActiveRecord::RecordInvalid
+    @user_list.user_list_items.reload
     render inertia: "UserLists/Show",
            props: user_list_show_props(@user_list, errors: formatted_errors(item)),
            status: :unprocessable_entity
   end
 
-  def update
-    @user_list_item.update!(update_params)
-    redirect_to user_list_path(@user_list), notice: "やることを更新しました"
+  def toggle
+    @user_list_item.update!(completed: !@user_list_item.completed)
+    redirect_to user_list_path(@user_list), notice: "完了状態を更新しました"
   rescue ActiveRecord::RecordInvalid
     render inertia: "UserLists/Show",
            props: user_list_show_props(@user_list, errors: formatted_errors(@user_list_item)),
@@ -31,33 +32,51 @@ class UserListItemsController < ApplicationController
   end
 
   def destroy
-    if @user_list_item.destroy
-      redirect_to user_list_path(@user_list), notice: "やることを消しました"
-    else
-      redirect_to user_list_path(@user_list), alert: "やることを消せませんでした"
+    UserListItem.transaction do
+      @user_list.lock!
+      @user_list_item.destroy!
+      UserListItemPositionService.normalize_positions(@user_list)
     end
+
+    redirect_to user_list_path(@user_list), notice: "やることを消しました"
+  rescue ActiveRecord::RecordNotDestroyed, ActiveRecord::RecordInvalid
+    @user_list.user_list_items.reload
+    render inertia: "UserLists/Show",
+           props: user_list_show_props(@user_list, errors: { base: "やることを消せませんでした" }),
+           status: :unprocessable_entity
   end
 
   def reorder
+    raw_item_ids = params[:item_ids]
+    normalized_ids =
+      if raw_item_ids.is_a?(String)
+        raw_item_ids.split(",")
+      else
+        Array(raw_item_ids)
+      end
+
     item_ids =
-      Array(params[:item_ids])
-      .filter_map { |id| Integer(id, 10) rescue nil }
-      .uniq
+      normalized_ids.filter_map do |id|
+        id.is_a?(Integer) ? id : Integer(id, 10)
+      rescue ArgumentError, TypeError
+        nil
+      end
 
     UserListItem.transaction do
       @user_list.lock!
-      items = @user_list.user_list_items.where(id: item_ids)
-      if item_ids.blank? ||
-         items.size != item_ids.size ||
-         items.size != @user_list.user_list_items.count
-        return redirect_to user_list_path(@user_list),
-                           alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
+      all_ids = @user_list.user_list_items.order(:position, :id).pluck(:id)
+      if item_ids.blank? || item_ids.sort != all_ids.sort
+        @user_list.user_list_items.reload
+        return render inertia: "UserLists/Show",
+                      props: user_list_show_props(
+                        @user_list,
+                        errors: { base: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。" }
+                      ),
+                      status: :unprocessable_entity
       end
+      ordered_ids = item_ids
 
-      now = Time.current
-      case_sql = item_ids.each_with_index.map { |id, index| "WHEN #{id} THEN #{index}" }.join(" ")
-
-      items.update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
+      UserListItemPositionService.update_positions_in_order(@user_list, ordered_ids)
     end
 
     redirect_to user_list_path(@user_list), notice: "並び順を保存しました"
@@ -77,11 +96,8 @@ class UserListItemsController < ApplicationController
     params.require(:user_list_item).permit(:title, :description)
   end
 
-  def update_params
-    params.require(:user_list_item).permit(:completed)
-  end
-
   def formatted_errors(record)
     record.errors.messages.transform_values(&:first)
   end
+
 end

@@ -8,7 +8,7 @@ export type FlashMessages = {
   alert?: string;
 };
 
-export type SharedErrors = Record<string, string>;
+export type SharedErrors = Record<string, string | string[]>;
 
 export type SharedPageProps = {
   auth: {

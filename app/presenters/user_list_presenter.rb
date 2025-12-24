@@ -14,13 +14,14 @@ class UserListPresenter
 
   def detail
     # N+1回避のため、呼び出し元で user_list_items を includes しておく
+    items = @user_list.user_list_items
     {
       id: @user_list.id,
       title: @user_list.title,
       description: @user_list.description,
       created_at: @user_list.created_at.iso8601,
-      items_count: @user_list.user_list_items_count,
-      items: @user_list.user_list_items.map do |item|
+      items_count: items.size,
+      items: items.map do |item|
         {
           id: item.id,
           title: item.title,

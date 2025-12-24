@@ -67,7 +67,13 @@ class UserListsController < ApplicationController
           updated_at: timestamp
         }
       end
-    UserListItem.insert_all!(items_attributes) if items_attributes.any?
+    if items_attributes.any?
+      UserListItem.insert_all!(items_attributes)
+      user_list.update_columns(
+        user_list_items_count: items_attributes.size,
+        updated_at: Time.current
+      )
+    end
 
     user_list
   end

@@ -1,4 +1,4 @@
-import { router, useForm } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import {
   useCallback,
   useEffect,
@@ -239,11 +239,20 @@ const DeleteConfirmationDialog = ({
 };
 
 export default function UserListsShow({ user_list, fixed_notice, meta }: Props) {
+  const { errors: sharedErrors } = usePage<PageProps>().props;
   const [items, setItems] = useState(user_list.items);
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
   const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
   const [isReordering, setIsReordering] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
+  const [pageError, setPageError] = useState<string | null>(null);
+  const sharedBaseMessages = (() => {
+    const base = sharedErrors?.base;
+    if (!base) {
+      return [];
+    }
+    return Array.isArray(base) ? base : [base];
+  })();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
@@ -280,6 +289,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      setPageError(null);
       post(routes.userListItems(user_list.id), {
         preserveScroll: true,
         onSuccess: () => reset()
@@ -303,11 +313,12 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       );
 
       router.patch(
-        routes.userListItem(user_list.id, itemId),
-        { user_list_item: { completed: nextCompleted } },
+        routes.toggleUserListItem(user_list.id, itemId),
+        {},
         {
           preserveScroll: true,
           onStart: () => {
+            setPageError(null);
             setUpdatingItemIds((ids) => [...ids, itemId]);
           },
           onFinish: () => {
@@ -321,6 +332,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                   : item
               )
             );
+            setPageError("完了状態の更新に失敗しました。もう一度お試しください。");
           }
         }
       );
@@ -346,9 +358,14 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
         { item_ids: nextItems.map((item) => item.id) },
         {
           preserveScroll: true,
-          onStart: () => setIsReordering(true),
+          onStart: () => {
+            setPageError(null);
+            setIsReordering(true);
+          },
           onFinish: () => setIsReordering(false),
-          onError: () => setItems(previousItems)
+          onError: () => {
+            setItems(previousItems);
+          }
         }
       );
     },
@@ -367,6 +384,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     const targetId = deleteTarget.id;
     const previousItems = items;
 
+    setPageError(null);
     setDeletingItemId(targetId);
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
@@ -374,7 +392,9 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onError: () => setItems(previousItems),
+      onError: () => {
+        setItems(previousItems);
+      },
       onFinish: () => {
         setDeletingItemId(null);
         setDeleteTarget(null);
@@ -393,6 +413,13 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
               <h1>{user_list.title}</h1>
             </div>
           </header>
+          <FormErrorMessages
+            messages={[pageError, ...sharedBaseMessages].filter(
+              (message): message is string => Boolean(message)
+            )}
+            variant="form"
+            keyPrefix="user-list-base"
+          />
           {user_list.description && (
             <p className="hero-subcopy">{user_list.description}</p>
           )}
