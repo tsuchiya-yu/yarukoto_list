@@ -81,7 +81,7 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const currentReview = template.current_review ?? null;
   const isEditingReview = Boolean(currentReview);
-  const { data, setData, post, patch, delete: destroy, processing, errors, isDirty } = useForm({
+  const { data, setData, post, patch, delete: destroy, processing, errors } = useForm({
     template_review: {
       score: currentReview?.score?.toString() ?? "5",
       content: currentReview?.content ?? ""
@@ -102,16 +102,13 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
   useFocusTrap(isDeleteDialogOpen, dialogRef, () => setIsDeleteDialogOpen(false));
 
   useEffect(() => {
-    if (isDirty) {
-      return;
-    }
     setData({
       template_review: {
         score: currentReview?.score?.toString() ?? "5",
         content: currentReview?.content ?? ""
       }
     });
-  }, [currentReview, isDirty]);
+  }, [currentReview]);
 
   const handleReviewChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) => {
