@@ -16,6 +16,10 @@ class TemplateReviewsController < ApplicationController
   end
 
   def update
+    if @review.nil? && @rating.nil?
+      return render_review_errors(base: I18n.t("errors.messages.review_not_found"))
+    end
+
     @review ||= @template.template_reviews.build(user: current_user)
     @review.assign_attributes(content: review_params[:content])
     @rating ||= current_user.template_ratings.build(template: @template)
@@ -25,6 +29,10 @@ class TemplateReviewsController < ApplicationController
   end
 
   def destroy
+    if @review.nil? && @rating.nil?
+      return render_review_errors(base: I18n.t("errors.messages.review_not_found"))
+    end
+
     TemplateReview.transaction do
       @review&.destroy!
       @rating&.destroy!
