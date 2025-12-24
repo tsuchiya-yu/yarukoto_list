@@ -263,7 +263,7 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
                       onClick={handleReviewDelete}
                       disabled={processing}
                     >
-                      消す
+                      削除
                     </button>
                   )}
                 </div>
