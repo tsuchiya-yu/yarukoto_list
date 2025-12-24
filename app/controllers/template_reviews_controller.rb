@@ -1,4 +1,6 @@
 class TemplateReviewsController < ApplicationController
+  rescue_from ActiveRecord::RecordNotUnique, with: :handle_record_not_unique
+
   before_action :set_template
   before_action :set_review_and_rating, only: %i[update destroy]
 
@@ -19,8 +21,6 @@ class TemplateReviewsController < ApplicationController
     end
 
     render_review_errors(review: review, rating: rating)
-  rescue ActiveRecord::RecordNotUnique
-    render_review_errors(base: I18n.t("errors.messages.review_or_rating_already_exists"))
   end
 
   def update
@@ -38,8 +38,6 @@ class TemplateReviewsController < ApplicationController
     end
 
     render_review_errors(review: @review, rating: @rating)
-  rescue ActiveRecord::RecordNotUnique
-    render_review_errors(base: I18n.t("errors.messages.review_or_rating_already_exists"))
   end
 
   def destroy
@@ -83,5 +81,9 @@ class TemplateReviewsController < ApplicationController
     render inertia: "Public/Templates/Show",
            props: public_template_show_props(@template, errors: errors),
            status: :unprocessable_entity
+  end
+
+  def handle_record_not_unique
+    render_review_errors(base: I18n.t("errors.messages.review_or_rating_already_exists"))
   end
 end
