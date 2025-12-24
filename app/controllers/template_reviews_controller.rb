@@ -52,8 +52,9 @@ class TemplateReviewsController < ApplicationController
   end
 
   def set_review_and_rating
-    @review = @template.template_reviews.find { |review| review.user_id == current_user.id }
-    @rating = @template.template_ratings.find { |rating| rating.user_id == current_user.id }
+    presenter = template_presenter
+    @review = presenter.current_review
+    @rating = presenter.current_rating
   end
 
   def review_params
@@ -89,5 +90,9 @@ class TemplateReviewsController < ApplicationController
 
   def handle_record_not_unique
     render_review_errors(base: I18n.t("errors.messages.review_or_rating_already_exists"))
+  end
+
+  def template_presenter
+    @template_presenter ||= TemplatePresenter.new(@template, current_user)
   end
 end

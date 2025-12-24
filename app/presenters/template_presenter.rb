@@ -1,17 +1,14 @@
 class TemplatePresenter
+  attr_reader :current_review, :current_rating
+
   def initialize(template, current_user)
     @template = template
     @current_user = current_user
+    set_current_review_and_rating
   end
 
   def detail
     reviews = @template.template_reviews
-    current_user_id = @current_user&.id
-    current_review =
-      current_user_id && reviews.find { |review| review.user_id == current_user_id }
-    current_rating =
-      current_user_id &&
-        @template.template_ratings.find { |rating| rating.user_id == current_user_id }
 
     {
       id: @template.id,
@@ -41,10 +38,10 @@ class TemplatePresenter
           created_at: review.created_at.iso8601
         }
       end,
-      current_review: current_review && {
-        id: current_review.id,
-        content: current_review.content,
-        score: current_rating&.score
+      current_review: @current_review && {
+        id: @current_review.id,
+        content: @current_review.content,
+        score: @current_rating&.score
       },
       cta: {
         message: "自分用にするにはログインしてください。",
@@ -52,5 +49,17 @@ class TemplatePresenter
         href: "/login"
       }
     }
+  end
+
+  private
+
+  def set_current_review_and_rating
+    return unless @current_user
+
+    current_user_id = @current_user.id
+    @current_review =
+      @template.template_reviews.find { |review| review.user_id == current_user_id }
+    @current_rating =
+      @template.template_ratings.find { |rating| rating.user_id == current_user_id }
   end
 end
