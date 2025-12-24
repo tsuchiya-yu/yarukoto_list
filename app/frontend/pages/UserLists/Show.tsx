@@ -252,7 +252,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       description: ""
     }
   });
-  const formErrors = Object.keys(errors).length > 0 ? errors : sharedErrors ?? {};
 
   const handleFormChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -402,6 +401,11 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
               <h1>{user_list.title}</h1>
             </div>
           </header>
+          <FormErrorMessages
+            messages={sharedErrors?.base}
+            variant="form"
+            keyPrefix="user-list-base"
+          />
           {user_list.description && (
             <p className="hero-subcopy">{user_list.description}</p>
           )}
@@ -419,7 +423,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
         <AddItemForm
           data={data}
-          errors={formErrors}
+          errors={errors}
           processing={processing}
           onChange={handleFormChange}
           onSubmit={handleSubmit}
