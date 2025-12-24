@@ -3,12 +3,6 @@ class TemplateReviewsController < ApplicationController
   before_action :set_review_and_rating, only: %i[update destroy]
 
   def create
-    if current_user.template_reviews.exists?(template: @template)
-      return render_review_errors(
-        base: I18n.t("errors.messages.review_already_exists")
-      )
-    end
-
     review = @template.template_reviews.new(
       user: current_user,
       content: review_params[:content]
@@ -34,7 +28,7 @@ class TemplateReviewsController < ApplicationController
   def update
     if @review.nil?
       return render_review_errors(
-        base: "編集するレビューが見つかりませんでした。ページを再読み込みしてください。"
+        base: I18n.t("errors.messages.review_not_found")
       )
     end
 
