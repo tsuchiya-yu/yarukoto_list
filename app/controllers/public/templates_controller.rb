@@ -45,11 +45,7 @@ module Public
     end
 
     def show
-      template =
-        Template
-        .with_public_stats
-        .includes(:user, :template_items, :template_ratings, template_reviews: :user)
-        .find(params[:id])
+      template = Template.find_for_public_show(params[:id])
 
       render inertia: "Public/Templates/Show", props: public_template_show_props(template)
     end

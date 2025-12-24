@@ -8,13 +8,10 @@ class TemplatePresenter
     reviews = @template.template_reviews
     current_user_id = @current_user&.id
     current_review =
-      if current_user_id
-        reviews.find { |review| review.user_id == current_user_id }
-      end
+      current_user_id && reviews.find { |review| review.user_id == current_user_id }
     current_rating =
-      if current_user_id
+      current_user_id &&
         @template.template_ratings.find { |rating| rating.user_id == current_user_id }
-      end
 
     {
       id: @template.id,

@@ -22,7 +22,7 @@ class TemplateReviewsController < ApplicationController
 
     render_review_errors(review: review, rating: rating)
   rescue ActiveRecord::RecordNotUnique
-    render_review_errors(base: I18n.t("errors.messages.review_already_exists"))
+    render_review_errors(base: I18n.t("errors.messages.review_or_rating_already_exists"))
   end
 
   def update
@@ -63,11 +63,7 @@ class TemplateReviewsController < ApplicationController
   private
 
   def set_template
-    @template =
-      Template
-      .with_public_stats
-      .includes(:user, :template_items, :template_ratings, template_reviews: :user)
-      .find(params[:template_id])
+    @template = Template.find_for_public_show(params[:template_id])
   end
 
   def set_review_and_rating

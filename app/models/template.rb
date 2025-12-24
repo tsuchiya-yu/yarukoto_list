@@ -49,6 +49,11 @@ class Template < ApplicationRecord
   }
 
   scope :order_by_newest, -> { order(created_at: :desc) }
+  scope :find_for_public_show, lambda { |id|
+    with_public_stats
+      .includes(:user, :template_items, :template_ratings, template_reviews: :user)
+      .find(id)
+  }
 
   def average_rating
     template_ratings.average(:score)&.to_f || 0.0
