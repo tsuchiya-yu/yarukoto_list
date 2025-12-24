@@ -74,17 +74,7 @@ class UserListItemsController < ApplicationController
     UserListItem.transaction do
       @user_list.lock!
       all_ids = @user_list.user_list_items.order(:position, :id).pluck(:id)
-      if item_ids.blank? || item_ids.uniq.size != item_ids.size
-        @user_list.user_list_items.reload
-        return render inertia: "UserLists/Show",
-                      props: user_list_show_props(
-                        @user_list,
-                        errors: { base: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。" }
-                      ),
-                      status: :unprocessable_entity
-      end
-
-      if item_ids.size != all_ids.size || (item_ids - all_ids).any?
+      if item_ids.blank? || item_ids.uniq.size != item_ids.size || item_ids.sort != all_ids.sort
         @user_list.user_list_items.reload
         return render inertia: "UserLists/Show",
                       props: user_list_show_props(

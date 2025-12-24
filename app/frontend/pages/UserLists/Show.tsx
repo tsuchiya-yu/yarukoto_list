@@ -245,6 +245,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
   const [isReordering, setIsReordering] = useState(false);
   const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
+  const [pageError, setPageError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const { data, setData, post, processing, reset, errors } = useForm({
     user_list_item: {
@@ -281,6 +282,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      setPageError(null);
       post(routes.userListItems(user_list.id), {
         preserveScroll: true,
         onSuccess: () => reset()
@@ -309,6 +311,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
         {
           preserveScroll: true,
           onStart: () => {
+            setPageError(null);
             setUpdatingItemIds((ids) => [...ids, itemId]);
           },
           onFinish: () => {
@@ -322,7 +325,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                   : item
               )
             );
-            window.alert("完了状態の更新に失敗しました。もう一度お試しください。");
+            setPageError("完了状態の更新に失敗しました。もう一度お試しください。");
           }
         }
       );
@@ -348,11 +351,14 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
         { item_ids: nextItems.map((item) => item.id) },
         {
           preserveScroll: true,
-          onStart: () => setIsReordering(true),
+          onStart: () => {
+            setPageError(null);
+            setIsReordering(true);
+          },
           onFinish: () => setIsReordering(false),
           onError: () => {
             setItems(previousItems);
-            window.alert("並び替えに失敗しました。もう一度お試しください。");
+            setPageError("並び替えに失敗しました。もう一度お試しください。");
           }
         }
       );
@@ -372,6 +378,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
     const targetId = deleteTarget.id;
     const previousItems = items;
 
+    setPageError(null);
     setDeletingItemId(targetId);
     setItems((currentItems) =>
       currentItems.filter((item) => item.id !== targetId)
@@ -381,7 +388,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       preserveScroll: true,
       onError: () => {
         setItems(previousItems);
-        window.alert("やることを消せませんでした。もう一度お試しください。");
+        setPageError("やることを消せませんでした。もう一度お試しください。");
       },
       onFinish: () => {
         setDeletingItemId(null);
@@ -402,7 +409,14 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
             </div>
           </header>
           <FormErrorMessages
-            messages={sharedErrors?.base}
+            messages={[
+              ...(pageError ? [pageError] : []),
+              ...(Array.isArray(sharedErrors?.base)
+                ? sharedErrors.base
+                : sharedErrors?.base
+                  ? [sharedErrors.base]
+                  : [])
+            ]}
             variant="form"
             keyPrefix="user-list-base"
           />
