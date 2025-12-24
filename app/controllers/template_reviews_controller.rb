@@ -24,12 +24,7 @@ class TemplateReviewsController < ApplicationController
   end
 
   def update
-    if @review.nil?
-      return render_review_errors(
-        base: I18n.t("errors.messages.review_not_found")
-      )
-    end
-
+    @review ||= @template.template_reviews.build(user: current_user)
     @review.assign_attributes(content: review_params[:content])
     @rating ||= current_user.template_ratings.build(template: @template)
     @rating.assign_attributes(score: review_params[:score])
@@ -81,8 +76,8 @@ class TemplateReviewsController < ApplicationController
       rating&.errors[:base]
     ].flatten.compact.uniq
     errors[:base] = all_base_errors if all_base_errors.present?
-    errors[:content] = review.errors[:content] if review&.errors&.key?(:content)
-    errors[:score] = rating.errors[:score] if rating&.errors&.key?(:score)
+    errors.merge!(review.errors.slice(:content)) if review&.errors&.include?(:content)
+    errors.merge!(rating.errors.slice(:score)) if rating&.errors&.include?(:score)
     render inertia: "Public/Templates/Show",
            props: public_template_show_props(@template, errors: errors),
            status: :unprocessable_entity
