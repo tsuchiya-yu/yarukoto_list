@@ -1,6 +1,7 @@
-import { Link, router, usePage } from "@inertiajs/react";
-import { useState } from "react";
+import { Link, router, useForm, usePage } from "@inertiajs/react";
+import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 
+import { FormErrorMessages } from "@/components/FormErrorMessages";
 import { PublicShell } from "@/components/PublicShell";
 import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
@@ -41,6 +42,11 @@ type TemplateDetail = {
   author_notes?: string | null;
   timeline: TimelineItem[];
   reviews: Review[];
+  current_review?: {
+    id: number;
+    content: string;
+    score: number | null;
+  } | null;
   cta: CTA;
 };
 
@@ -55,16 +61,78 @@ type Meta = {
 type Props = PageProps<{
   template: TemplateDetail;
   fixed_notice: string;
+  review_notice: string;
   meta: Meta;
 }>;
 
-export default function TemplateShow({ template, fixed_notice, meta }: Props) {
-  const { auth } = usePage<PageProps>().props;
+export default function TemplateShow({ template, fixed_notice, review_notice, meta }: Props) {
+  const { auth, errors: sharedErrors } = usePage<PageProps>().props;
   const isLoggedIn = Boolean(auth?.user);
   const [isCopying, setIsCopying] = useState(false);
+  const currentReview = template.current_review ?? null;
+  const isEditingReview = Boolean(currentReview);
+  const { data, setData, post, patch, delete: destroy, processing, errors } = useForm({
+    template_review: {
+      score: currentReview?.score?.toString() ?? "5",
+      content: currentReview?.content ?? ""
+    }
+  });
   const ctaMessage = isLoggedIn
     ? "このリストを自分用にコピーして、やることの進捗を記録できます。"
     : template.cta.message;
+  const baseMessages = (() => {
+    const base = errors.base || sharedErrors?.base;
+    if (!base) {
+      return [];
+    }
+    return Array.isArray(base) ? base : [base];
+  })();
+
+  useEffect(() => {
+    setData({
+      template_review: {
+        score: currentReview?.score?.toString() ?? "5",
+        content: currentReview?.content ?? ""
+      }
+    });
+  }, [currentReview?.id, currentReview?.score, currentReview?.content, setData]);
+
+  const handleReviewChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) => {
+      const { name, value } = event.target;
+      setData((currentData) => ({
+        ...currentData,
+        template_review: {
+          ...currentData.template_review,
+          [name]: value
+        }
+      }));
+    },
+    [setData]
+  );
+
+  const handleReviewSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const action = isEditingReview ? patch : post;
+      action(routes.templateReview(template.id), {
+        preserveScroll: true
+      });
+    },
+    [isEditingReview, patch, post, template.id]
+  );
+
+  const handleReviewDelete = useCallback(() => {
+    if (!isEditingReview) {
+      return;
+    }
+    if (!window.confirm("このレビューを消しますか？")) {
+      return;
+    }
+    destroy(routes.templateReview(template.id), {
+      preserveScroll: true
+    });
+  }, [destroy, isEditingReview, template.id]);
 
   return (
     <>
@@ -116,6 +184,71 @@ export default function TemplateShow({ template, fixed_notice, meta }: Props) {
             <p className="section-label">レビュー</p>
             <h2>利用者の声</h2>
           </header>
+          {isLoggedIn && (
+            <div className="review-form">
+              <p className="review-notice">{review_notice}</p>
+              <form onSubmit={handleReviewSubmit} className="item-form">
+                <FormErrorMessages
+                  messages={baseMessages}
+                  variant="form"
+                  keyPrefix="template-review-base"
+                />
+                <div className="form-field">
+                  <label htmlFor="template-review-score">★評価</label>
+                  <select
+                    id="template-review-score"
+                    name="score"
+                    value={data.template_review.score}
+                    onChange={handleReviewChange}
+                  >
+                    {[5, 4, 3, 2, 1].map((score) => (
+                      <option key={score} value={score}>
+                        {score}
+                      </option>
+                    ))}
+                  </select>
+                  <FormErrorMessages
+                    messages={errors.score}
+                    keyPrefix="template-review-score"
+                  />
+                </div>
+                <div className="form-field">
+                  <label htmlFor="template-review-content">レビュー</label>
+                  <textarea
+                    id="template-review-content"
+                    name="content"
+                    value={data.template_review.content}
+                    onChange={handleReviewChange}
+                    placeholder="このリストの感想を書いてください"
+                    rows={4}
+                  />
+                  <FormErrorMessages
+                    messages={errors.content}
+                    keyPrefix="template-review-content"
+                  />
+                </div>
+                <div className="review-actions">
+                  <button type="submit" className="btn-primary btn-compact" disabled={processing}>
+                    {processing
+                      ? "送信中..."
+                      : isEditingReview
+                        ? "レビューを更新する"
+                        : "レビューを投稿する"}
+                  </button>
+                  {isEditingReview && (
+                    <button
+                      type="button"
+                      className="btn-danger btn-compact"
+                      onClick={handleReviewDelete}
+                      disabled={processing}
+                    >
+                      レビューを消す
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          )}
           <div className="review-list">
             {template.reviews.map((review) => (
               <article key={review.id} className="review-card">

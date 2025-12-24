@@ -61,12 +61,84 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def public_template_show_props(template, errors: {})
+    {
+      template: public_template_detail(template),
+      fixed_notice: fixed_notice_text,
+      review_notice: review_notice_text,
+      meta: meta_payload(
+        template.title,
+        helpers.public_template_meta_description(template)
+      ),
+      errors: errors
+    }
+  end
+
   def fixed_notice_text
     <<~TEXT.strip
       ※本サービスで提供されるやることリストは、一般的な情報をもとにした参考例です。
       手続きの要否や内容は、契約内容・地域・個別状況によって異なる場合があります。
       必ず公式サイトや契約書などの一次情報もあわせてご確認ください。
     TEXT
+  end
+
+  def review_notice_text
+    <<~TEXT.strip
+      ※本サービスで提供されるやることリストは、一般的な情報や個人の体験をもとにした参考例です。
+      手続きの要否や内容は、契約内容・地域・個別状況によって異なる場合があります。
+    TEXT
+  end
+
+  def public_template_detail(template)
+    reviews = template.template_reviews
+    current_review =
+      if current_user
+        reviews.find { |review| review.user_id == current_user.id }
+      end
+    current_rating =
+      if current_user
+        template.template_ratings.find { |rating| rating.user_id == current_user.id }
+      end
+
+    {
+      id: template.id,
+      title: template.title,
+      description: template.description,
+      author: {
+        name: template.user.name
+      },
+      updated_at: template.updated_at.iso8601,
+      average_score: template.public_average_score,
+      ratings_count: template.public_ratings_count,
+      reviews_count: template.public_reviews_count,
+      copies_count: template.public_copies_count,
+      author_notes: template.author_notes,
+      timeline: template.template_items.map do |item|
+        {
+          id: item.id,
+          title: item.title,
+          description: item.description
+        }
+      end,
+      reviews: reviews.map do |review|
+        {
+          id: review.id,
+          user_name: review.user.name,
+          content: review.content,
+          created_at: review.created_at.iso8601
+        }
+      end,
+      current_review: current_review && {
+        id: current_review.id,
+        content: current_review.content,
+        score: current_rating&.score
+      },
+      cta: {
+        message: "自分用にするにはログインしてください。",
+        button_label: "ログイン",
+        href: "/login"
+      }
+    }
   end
 
   def user_payload(user)
