@@ -49,6 +49,18 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def user_list_show_props(user_list, errors: {})
+    {
+      user_list: UserListPresenter.new(user_list).detail,
+      fixed_notice: fixed_notice_text,
+      meta: meta_payload(
+        "自分用リスト",
+        "自分用に追加したリストの内容を確認できます。"
+      ),
+      errors: errors
+    }
+  end
+
   def fixed_notice_text
     <<~TEXT.strip
       ※本サービスで提供されるやることリストは、一般的な情報をもとにした参考例です。

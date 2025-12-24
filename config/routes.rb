@@ -10,7 +10,11 @@ Rails.application.routes.draw do
   get "/signup", to: "registrations#new", as: :signup
   post "/signup", to: "registrations#create"
 
-  resources :user_lists, only: %i[index show create]
+  resources :user_lists, only: %i[index show create] do
+    resources :items, controller: "user_list_items", only: %i[create update destroy] do
+      patch :reorder, on: :collection
+    end
+  end
 
   scope module: :public do
     get "/lists", to: "templates#index", as: :public_templates
