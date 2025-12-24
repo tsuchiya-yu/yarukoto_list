@@ -49,7 +49,10 @@ class UserListItemsController < ApplicationController
 
     redirect_to user_list_path(@user_list), notice: "やることを消しました"
   rescue ActiveRecord::RecordNotDestroyed, ActiveRecord::RecordInvalid
-    redirect_to user_list_path(@user_list), alert: "やることを消せませんでした"
+    @user_list.user_list_items.reload
+    render inertia: "UserLists/Show",
+           props: user_list_show_props(@user_list, errors: { base: "やることを消せませんでした" }),
+           status: :unprocessable_entity
   end
 
   def reorder
@@ -72,13 +75,23 @@ class UserListItemsController < ApplicationController
       @user_list.lock!
       all_ids = @user_list.user_list_items.order(:position, :id).pluck(:id)
       if item_ids.blank? || item_ids.uniq.size != item_ids.size
-        return redirect_to user_list_path(@user_list),
-                           alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
+        @user_list.user_list_items.reload
+        return render inertia: "UserLists/Show",
+                      props: user_list_show_props(
+                        @user_list,
+                        errors: { base: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。" }
+                      ),
+                      status: :unprocessable_entity
       end
 
       if item_ids.size != all_ids.size || (item_ids - all_ids).any?
-        return redirect_to user_list_path(@user_list),
-                           alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
+        @user_list.user_list_items.reload
+        return render inertia: "UserLists/Show",
+                      props: user_list_show_props(
+                        @user_list,
+                        errors: { base: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。" }
+                      ),
+                      status: :unprocessable_entity
       end
       ordered_ids = item_ids
 
