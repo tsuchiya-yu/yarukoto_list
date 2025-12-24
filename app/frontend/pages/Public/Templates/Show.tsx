@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ChangeEvent,
   type FormEvent
@@ -13,6 +14,7 @@ import { PublicShell } from "@/components/PublicShell";
 import { Seo } from "@/components/Seo";
 import { formatDate, formatScore } from "@/lib/formatters";
 import { routes } from "@/lib/routes";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 import type { PageProps } from "@/types/page";
 
 type TimelineItem = {
@@ -76,6 +78,7 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
   const { auth, errors: sharedErrors } = usePage<PageProps>().props;
   const isLoggedIn = Boolean(auth?.user);
   const [isCopying, setIsCopying] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const currentReview = template.current_review ?? null;
   const isEditingReview = Boolean(currentReview);
   const { data, setData, post, patch, delete: destroy, processing, errors } = useForm({
@@ -94,6 +97,9 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
     }
     return Array.isArray(base) ? base : [base];
   }, [errors.base, sharedErrors?.base]);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+
+  useFocusTrap(isDeleteDialogOpen, dialogRef, () => setIsDeleteDialogOpen(false));
 
   useEffect(() => {
     setData({
@@ -133,11 +139,16 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
     if (!isEditingReview) {
       return;
     }
-    if (!window.confirm("このレビューを消しますか？")) {
+    setIsDeleteDialogOpen(true);
+  }, [isEditingReview]);
+
+  const confirmReviewDelete = useCallback(() => {
+    if (!isEditingReview) {
       return;
     }
     destroy(routes.templateReview(template.id), {
-      preserveScroll: true
+      preserveScroll: true,
+      onFinish: () => setIsDeleteDialogOpen(false)
     });
   }, [destroy, isEditingReview, template.id]);
 
@@ -306,6 +317,32 @@ export default function TemplateShow({ template, fixed_notice, review_notice, me
         <section className="fixed-notice">
           <p>{fixed_notice}</p>
         </section>
+
+        {isDeleteDialogOpen && (
+          <div className="dialog-overlay" role="dialog" aria-modal="true">
+            <div className="dialog-card" ref={dialogRef}>
+              <p className="dialog-title">このレビューを消しますか？</p>
+              <div className="dialog-actions">
+                <button
+                  type="button"
+                  className="btn-danger"
+                  onClick={confirmReviewDelete}
+                  disabled={processing}
+                >
+                  {processing ? "消しています..." : "消す"}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setIsDeleteDialogOpen(false)}
+                  disabled={processing}
+                >
+                  そのままにする
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </PublicShell>
     </>
   );

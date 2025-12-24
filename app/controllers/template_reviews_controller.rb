@@ -81,7 +81,11 @@ class TemplateReviewsController < ApplicationController
 
   def render_review_errors(review: nil, rating: nil, base: nil)
     errors = {}
-    errors[:base] = base if base.present?
+    base_errors = []
+    base_errors << base if base.present?
+    base_errors.concat(review.errors[:base]) if review&.errors&.key?(:base)
+    base_errors.concat(rating.errors[:base]) if rating&.errors&.key?(:base)
+    errors[:base] = base_errors.uniq if base_errors.present?
     errors[:content] = review.errors[:content] if review&.errors&.key?(:content)
     errors[:score] = rating.errors[:score] if rating&.errors&.key?(:score)
     render inertia: "Public/Templates/Show",
