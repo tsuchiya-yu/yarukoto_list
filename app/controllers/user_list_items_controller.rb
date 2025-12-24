@@ -12,7 +12,6 @@ class UserListItemsController < ApplicationController
       @user_list.lock!
       item.position = @user_list.user_list_items.maximum(:position).to_i + 1
       item.save!
-      normalize_positions(@user_list)
     end
 
     redirect_to user_list_path(@user_list), notice: "やることを追加しました"
@@ -81,16 +80,9 @@ class UserListItemsController < ApplicationController
         return redirect_to user_list_path(@user_list),
                            alert: "リストが更新されたため、並び替えできませんでした。ページを再読み込みしてください。"
       end
-      ordered_ids = item_ids + (all_ids - item_ids)
+      ordered_ids = item_ids
 
-      now = Time.current
-      case_sql =
-        ordered_ids
-        .each_with_index
-        .map { |id, index| "WHEN #{id} THEN #{index + 1}" }
-        .join(" ")
-
-      @user_list.user_list_items.update_all(["position = CASE id #{case_sql} END, updated_at = ?", now])
+      update_positions_in_order(@user_list, ordered_ids)
     end
 
     redirect_to user_list_path(@user_list), notice: "並び順を保存しました"
@@ -120,6 +112,10 @@ class UserListItemsController < ApplicationController
 
   def normalize_positions(user_list)
     ordered_ids = user_list.user_list_items.order(:position, :id).pluck(:id)
+    update_positions_in_order(user_list, ordered_ids)
+  end
+
+  def update_positions_in_order(user_list, ordered_ids)
     return if ordered_ids.empty?
 
     now = Time.current
