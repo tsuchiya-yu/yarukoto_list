@@ -411,11 +411,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
           <FormErrorMessages
             messages={[
               ...(pageError ? [pageError] : []),
-              ...(Array.isArray(sharedErrors?.base)
-                ? sharedErrors.base
-                : sharedErrors?.base
-                  ? [sharedErrors.base]
-                  : [])
+              ...(sharedErrors?.base ? [sharedErrors.base] : [])
             ]}
             variant="form"
             keyPrefix="user-list-base"
