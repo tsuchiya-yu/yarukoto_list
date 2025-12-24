@@ -361,7 +361,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
           onFinish: () => setIsReordering(false),
           onError: () => {
             setItems(previousItems);
-            setPageError("並び替えに失敗しました。もう一度お試しください。");
           }
         }
       );
@@ -391,7 +390,6 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       preserveScroll: true,
       onError: () => {
         setItems(previousItems);
-        setPageError("やることを消せませんでした。もう一度お試しください。");
       },
       onFinish: () => {
         setDeletingItemId(null);
