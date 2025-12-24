@@ -5,7 +5,7 @@ class TemplateReviewsController < ApplicationController
   def create
     if current_user.template_reviews.exists?(template: @template)
       return render_review_errors(
-        base: "このリストへのレビューはすでに投稿済みです。内容を編集してください。"
+        base: I18n.t("errors.messages.review_already_exists")
       )
     end
 
@@ -28,7 +28,7 @@ class TemplateReviewsController < ApplicationController
 
     render_review_errors(review: review, rating: rating)
   rescue ActiveRecord::RecordNotUnique
-    render_review_errors(base: "このリストへのレビューはすでに投稿済みです。内容を編集してください。")
+    render_review_errors(base: I18n.t("errors.messages.review_already_exists"))
   end
 
   def update
@@ -53,7 +53,7 @@ class TemplateReviewsController < ApplicationController
   end
 
   def destroy
-    if @review.nil? && @rating.nil?
+    if @review.nil? || @rating.nil?
       return render_review_errors(
         base: "削除するレビューが見つかりませんでした。ページを再読み込みしてください。"
       )

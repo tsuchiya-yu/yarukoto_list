@@ -1,0 +1,4 @@
+ja:
+  errors:
+    messages:
+      review_already_exists: "このリストへのレビューはすでに投稿済みです。内容を編集してください。"

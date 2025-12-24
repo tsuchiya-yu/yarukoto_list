@@ -8,6 +8,6 @@ class TemplateReview < ApplicationRecord
   validates :user_id,
             uniqueness: {
               scope: :template_id,
-              message: "このリストへのレビューはすでに投稿済みです。内容を編集してください。"
+              message: I18n.t("errors.messages.review_already_exists")
             }
 end
