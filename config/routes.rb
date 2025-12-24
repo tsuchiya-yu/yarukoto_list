@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :user_lists, only: %i[index show create] do
     resources :items, controller: "user_list_items", only: %i[create update destroy] do
       patch :reorder, on: :collection
+      patch :toggle, on: :member
     end
   end
 

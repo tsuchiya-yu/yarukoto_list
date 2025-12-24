@@ -17,6 +17,8 @@ export const routes = createRoutes({
   userListItems: (listId: number | string) => `/user_lists/${listId}/items`,
   userListItem: (listId: number | string, itemId: number | string) =>
     `/user_lists/${listId}/items/${itemId}`,
+  toggleUserListItem: (listId: number | string, itemId: number | string) =>
+    `/user_lists/${listId}/items/${itemId}/toggle`,
   userListItemsReorder: (listId: number | string) =>
     `/user_lists/${listId}/items/reorder`,
   signup: "/signup",

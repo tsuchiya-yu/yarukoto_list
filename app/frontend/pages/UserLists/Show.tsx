@@ -1,4 +1,4 @@
-import { router, useForm } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import {
   useCallback,
   useEffect,
@@ -239,6 +239,7 @@ const DeleteConfirmationDialog = ({
 };
 
 export default function UserListsShow({ user_list, fixed_notice, meta }: Props) {
+  const { errors: sharedErrors } = usePage<PageProps>().props;
   const [items, setItems] = useState(user_list.items);
   const [deleteTarget, setDeleteTarget] = useState<UserListItem | null>(null);
   const [updatingItemIds, setUpdatingItemIds] = useState<number[]>([]);
@@ -251,6 +252,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       description: ""
     }
   });
+  const formErrors = Object.keys(errors).length > 0 ? errors : sharedErrors ?? {};
 
   const handleFormChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -303,8 +305,8 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
       );
 
       router.patch(
-        routes.userListItem(user_list.id, itemId),
-        { user_list_item: { completed: nextCompleted } },
+        routes.toggleUserListItem(user_list.id, itemId),
+        {},
         {
           preserveScroll: true,
           onStart: () => {
@@ -321,6 +323,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
                   : item
               )
             );
+            window.alert("完了状態の更新に失敗しました。もう一度お試しください。");
           }
         }
       );
@@ -348,7 +351,10 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
           preserveScroll: true,
           onStart: () => setIsReordering(true),
           onFinish: () => setIsReordering(false),
-          onError: () => setItems(previousItems)
+          onError: () => {
+            setItems(previousItems);
+            window.alert("並び替えに失敗しました。もう一度お試しください。");
+          }
         }
       );
     },
@@ -374,7 +380,10 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
     router.delete(routes.userListItem(user_list.id, targetId), {
       preserveScroll: true,
-      onError: () => setItems(previousItems),
+      onError: () => {
+        setItems(previousItems);
+        window.alert("やることを消せませんでした。もう一度お試しください。");
+      },
       onFinish: () => {
         setDeletingItemId(null);
         setDeleteTarget(null);
@@ -410,7 +419,7 @@ export default function UserListsShow({ user_list, fixed_notice, meta }: Props) 
 
         <AddItemForm
           data={data}
-          errors={errors}
+          errors={formErrors}
           processing={processing}
           onChange={handleFormChange}
           onSubmit={handleSubmit}
