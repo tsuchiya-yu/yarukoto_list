@@ -7,10 +7,8 @@ class TemplateReviewsController < ApplicationController
       user: current_user,
       content: review_params[:content]
     )
-    rating = @template.template_ratings.new(
-      user: current_user,
-      score: review_params[:score]
-    )
+    rating = current_user.template_ratings.find_or_initialize_by(template: @template)
+    rating.score = review_params[:score]
 
     if review.valid? && rating.valid?
       TemplateReview.transaction do
