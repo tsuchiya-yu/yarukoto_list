@@ -10,19 +10,10 @@ class UserListTest < ActiveSupport::TestCase
   end
 
   test "同じユーザーとテンプレートの組み合わせは重複できない" do
-    user = users(:taro)
-    template = templates(:moving)
+    duplicate_list = @user_list.dup
 
-    user_list = UserList.new(
-      user: user,
-      template: template,
-      title: "重複のやること",
-      description: "重複テスト",
-      position: 0
-    )
-
-    assert_not user_list.valid?
-    assert_includes user_list.errors[:template_id], I18n.t("errors.messages.user_list_already_added")
+    assert_not duplicate_list.valid?
+    assert_includes duplicate_list.errors[:template_id], I18n.t("errors.messages.user_list_already_added")
   end
 
   test "positionは0以上が必要" do

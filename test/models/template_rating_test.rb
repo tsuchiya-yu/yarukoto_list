@@ -1,26 +1,25 @@
 require "test_helper"
 
 class TemplateRatingTest < ActiveSupport::TestCase
+  setup do
+    @rating = template_ratings(:moving_rating)
+  end
+
   test "フィクスチャの評価は有効" do
-    assert template_ratings(:moving_rating).valid?
+    assert @rating.valid?
   end
 
   test "評価は1から5の範囲" do
-    rating = template_ratings(:moving_rating)
-    rating.score = 0
+    @rating.score = 0
 
-    assert_not rating.valid?
-    assert_includes rating.errors[:score], I18n.t("errors.messages.rating_score_invalid")
+    assert_not @rating.valid?
+    assert_includes @rating.errors[:score], I18n.t("errors.messages.rating_score_invalid")
   end
 
   test "同じユーザーとテンプレートの組み合わせは重複できない" do
-    rating = TemplateRating.new(
-      template: templates(:moving),
-      user: users(:hanako),
-      score: 4
-    )
+    duplicate_rating = @rating.dup
 
-    assert_not rating.valid?
-    assert_includes rating.errors[:base], I18n.t("errors.messages.rating_already_exists")
+    assert_not duplicate_rating.valid?
+    assert_includes duplicate_rating.errors[:base], I18n.t("errors.messages.rating_already_exists")
   end
 end

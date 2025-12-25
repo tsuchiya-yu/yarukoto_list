@@ -24,13 +24,9 @@ class TemplateReviewTest < ActiveSupport::TestCase
   end
 
   test "同じユーザーとテンプレートの組み合わせは重複できない" do
-    review = TemplateReview.new(
-      template: templates(:moving),
-      user: users(:hanako),
-      content: "重複テスト"
-    )
+    duplicate_review = @review.dup
 
-    assert_not review.valid?
-    assert_includes review.errors[:base], I18n.t("errors.messages.review_already_exists")
+    assert_not duplicate_review.valid?
+    assert_includes duplicate_review.errors[:base], I18n.t("errors.messages.review_already_exists")
   end
 end
