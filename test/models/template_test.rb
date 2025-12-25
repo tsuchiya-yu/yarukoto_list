@@ -1,7 +1,7 @@
 require "test_helper"
 
 class TemplateTest < ActiveSupport::TestCase
-  test "フィクスチャのテンプレは有効" do
+  test "フィクスチャのテンプレートは有効" do
     assert templates(:moving).valid?
   end
 

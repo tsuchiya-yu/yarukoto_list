@@ -5,7 +5,7 @@ class TemplateItemTest < ActiveSupport::TestCase
     @item = template_items(:moving_step1)
   end
 
-  test "フィクスチャのテンプレ項目は有効" do
+  test "フィクスチャのテンプレート項目は有効" do
     assert @item.valid?
   end
 
