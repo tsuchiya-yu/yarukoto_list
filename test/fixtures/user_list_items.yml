@@ -1,0 +1,7 @@
+taro_moving_item:
+  user_list: taro_moving_list
+  template_item: moving_step1
+  title: 住民票の異動
+  description: 転出届と転入届を確認する。
+  completed: false
+  position: 0

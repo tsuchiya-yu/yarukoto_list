@@ -1,0 +1,11 @@
+moving_step1:
+  template: moving
+  title: 住民票の異動
+  description: 転出届と転入届を確認する。
+  position: 0
+
+packing_step1:
+  template: packing
+  title: 使わないものを箱に入れる
+  description: 先に不要なものをまとめる。
+  position: 0
