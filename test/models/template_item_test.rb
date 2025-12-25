@@ -1,21 +1,23 @@
 require "test_helper"
 
 class TemplateItemTest < ActiveSupport::TestCase
+  setup do
+    @item = template_items(:moving_step1)
+  end
+
   test "フィクスチャのテンプレ項目は有効" do
-    assert template_items(:moving_step1).valid?
+    assert @item.valid?
   end
 
   test "タイトルは必須" do
-    item = template_items(:moving_step1)
-    item.title = ""
+    @item.title = ""
 
-    assert_not item.valid?
+    assert_not @item.valid?
   end
 
   test "positionは0以上が必要" do
-    item = template_items(:moving_step1)
-    item.position = -1
+    @item.position = -1
 
-    assert_not item.valid?
+    assert_not @item.valid?
   end
 end
