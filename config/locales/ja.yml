@@ -1,0 +1,11 @@
+ja:
+  errors:
+    messages:
+      review_already_exists: "このリストへのレビューはすでに投稿済みです。内容を編集してください。"
+      review_content_blank: "レビューを入力してください。"
+      review_content_too_long: "レビューは1000文字以内で入力してください。"
+      review_not_found: "編集するレビューが見つかりませんでした。ページを再読み込みしてください。"
+      review_not_destroyed: "レビューを削除できませんでした。時間をおいて再度お試しください。"
+      review_or_rating_already_exists: "レビューまたは★評価はすでに投稿済みです。内容を編集してください。"
+      rating_score_invalid: "★評価は1〜5で選んでください。"
+      rating_already_exists: "このリストへの★評価はすでに投稿済みです。内容を編集してください。"

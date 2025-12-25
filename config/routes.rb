@@ -17,6 +17,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :templates, only: [] do
+    resource :template_review, controller: "template_reviews", only: %i[create update destroy]
+  end
+
   scope module: :public do
     get "/lists", to: "templates#index", as: :public_templates
     get "/lists/:id", to: "templates#show", as: :public_template

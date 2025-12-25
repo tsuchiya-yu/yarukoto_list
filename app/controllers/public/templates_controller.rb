@@ -45,20 +45,9 @@ module Public
     end
 
     def show
-      template =
-        Template
-        .with_public_stats
-        .includes(:user, :template_items, template_reviews: :user)
-        .find(params[:id])
+      template = Template.find_for_public_show(params[:id])
 
-      render inertia: "Public/Templates/Show", props: {
-        template: template_detail(template),
-        fixed_notice: fixed_notice_text,
-        meta: default_meta_tags(
-          title: template.title,
-          description: helpers.public_template_meta_description(template)
-        )
-      }
+      render inertia: "Public/Templates/Show", props: public_template_show_props(template)
     end
 
     private
@@ -82,44 +71,6 @@ module Public
       else
         relation.order_by_popularity
       end
-    end
-
-    def template_detail(template)
-      reviews = template.template_reviews
-      {
-        id: template.id,
-        title: template.title,
-        description: template.description,
-        author: {
-          name: template.user.name
-        },
-        updated_at: template.updated_at.iso8601,
-        average_score: template.public_average_score,
-        ratings_count: template.public_ratings_count,
-        reviews_count: template.public_reviews_count,
-        copies_count: template.public_copies_count,
-        author_notes: template.author_notes,
-        timeline: template.template_items.map do |item|
-          {
-            id: item.id,
-            title: item.title,
-            description: item.description
-          }
-        end,
-        reviews: reviews.map do |review|
-          {
-            id: review.id,
-            user_name: review.user.name,
-            content: review.content,
-            created_at: review.created_at.iso8601
-          }
-        end,
-        cta: {
-          message: "自分用にするにはログインしてください。",
-          button_label: "ログイン",
-          href: "/login"
-        }
-      }
     end
 
     def normalized_page_param

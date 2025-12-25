@@ -61,11 +61,31 @@ class ApplicationController < ActionController::Base
     }
   end
 
+  def public_template_show_props(template, errors: {})
+    {
+      template: TemplatePresenter.new(template, current_user).detail,
+      fixed_notice: fixed_notice_text,
+      review_notice: review_notice_text,
+      meta: meta_payload(
+        template.title,
+        helpers.public_template_meta_description(template)
+      ),
+      errors: errors
+    }
+  end
+
   def fixed_notice_text
     <<~TEXT.strip
       ※本サービスで提供されるやることリストは、一般的な情報をもとにした参考例です。
       手続きの要否や内容は、契約内容・地域・個別状況によって異なる場合があります。
       必ず公式サイトや契約書などの一次情報もあわせてご確認ください。
+    TEXT
+  end
+
+  def review_notice_text
+    <<~TEXT.strip
+      ※本サービスで提供されるやることリストは、一般的な情報や個人の体験をもとにした参考例です。
+      手続きの要否や内容は、契約内容・地域・個別状況によって異なる場合があります。
     TEXT
   end
 

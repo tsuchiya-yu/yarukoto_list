@@ -21,6 +21,7 @@ export const routes = createRoutes({
     `/user_lists/${listId}/items/${itemId}/toggle`,
   userListItemsReorder: (listId: number | string) =>
     `/user_lists/${listId}/items/reorder`,
+  templateReview: (templateId: number | string) => `/templates/${templateId}/template_review`,
   signup: "/signup",
   login: "/login",
   logout: "/logout"

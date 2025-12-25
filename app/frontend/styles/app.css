@@ -377,6 +377,15 @@ a {
   background: #fff;
 }
 
+.form-field select {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+}
+
 .form-field textarea {
   border: 1px solid var(--color-border);
   border-radius: 12px;
@@ -388,7 +397,8 @@ a {
 }
 
 .form-field textarea:focus,
-.form-field input:focus {
+.form-field input:focus,
+.form-field select:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2);
 }
@@ -623,6 +633,28 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.review-form {
+  margin: 1rem 0 1.5rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: #f8fafc;
+}
+
+.review-notice {
+  white-space: pre-line;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin: 0 0 1rem;
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .timeline-step {
