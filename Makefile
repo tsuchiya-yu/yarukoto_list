@@ -1,4 +1,4 @@
-.PHONY: dev dev-mcp up down shell bundle db-migrate
+.PHONY: dev dev-mcp up down shell bundle db-migrate test
 
 DEV_SERVICES=web vite ssr
 COMPOSE_RUN=docker compose run --rm web
@@ -26,3 +26,6 @@ bundle:
 
 db-migrate:
 	$(COMPOSE_RUN) bin/rails db:migrate
+
+test:
+	$(COMPOSE_RUN) bin/rails test
