@@ -22,6 +22,12 @@ class UserListItemTest < ActiveSupport::TestCase
     assert_not @item.valid?
   end
 
+  test "positionは0でも有効" do
+    @item.position = 0
+
+    assert @item.valid?
+  end
+
   test "template_itemがなくても作成できる" do
     item = UserListItem.new(
       user_list: user_lists(:taro_moving_list),

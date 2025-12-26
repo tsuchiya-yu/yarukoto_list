@@ -21,4 +21,10 @@ class UserListTest < ActiveSupport::TestCase
 
     assert_not @user_list.valid?
   end
+
+  test "positionは0でも有効" do
+    @user_list.position = 0
+
+    assert @user_list.valid?
+  end
 end

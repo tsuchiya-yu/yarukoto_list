@@ -23,6 +23,12 @@ class TemplateReviewTest < ActiveSupport::TestCase
     assert_includes @review.errors[:content], I18n.t("errors.messages.review_content_too_long")
   end
 
+  test "内容は1000文字でも有効" do
+    @review.content = "a" * 1000
+
+    assert @review.valid?
+  end
+
   test "同じユーザーとテンプレートの組み合わせは重複できない" do
     duplicate_review = @review.dup
 

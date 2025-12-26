@@ -15,10 +15,22 @@ class TemplateTest < ActiveSupport::TestCase
     assert_not @template.valid?
   end
 
+  test "タイトルは120文字でも有効" do
+    @template.title = "a" * 120
+
+    assert @template.valid?
+  end
+
   test "author_notesは500文字以内" do
     @template.author_notes = "a" * 501
 
     assert_not @template.valid?
+  end
+
+  test "author_notesは500文字でも有効" do
+    @template.author_notes = "a" * 500
+
+    assert @template.valid?
   end
 
   test "average_ratingは平均値を返す" do
