@@ -13,11 +13,13 @@ class TemplateItemTest < ActiveSupport::TestCase
     @item.title = ""
 
     assert_not @item.valid?
+    assert_not_empty @item.errors[:title]
   end
 
   test "positionは0以上が必要" do
     @item.position = -1
 
     assert_not @item.valid?
+    assert_not_empty @item.errors[:position]
   end
 end

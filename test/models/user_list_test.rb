@@ -20,6 +20,7 @@ class UserListTest < ActiveSupport::TestCase
     @user_list.position = -1
 
     assert_not @user_list.valid?
+    assert_not_empty @user_list.errors[:position]
   end
 
   test "positionは0でも有効" do
