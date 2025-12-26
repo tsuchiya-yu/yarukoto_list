@@ -24,4 +24,10 @@ class TemplateTest < ActiveSupport::TestCase
   test "average_ratingは平均値を返す" do
     assert_in_delta 5.0, @template.average_rating, 0.001
   end
+
+  test "average_ratingは評価がない場合に0.0を返す" do
+    template_without_ratings = templates(:packing)
+
+    assert_equal 0.0, template_without_ratings.average_rating
+  end
 end
