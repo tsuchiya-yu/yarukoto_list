@@ -9,10 +9,11 @@ class TemplateTest < ActiveSupport::TestCase
     assert @template.valid?
   end
 
-  test "タイトルは120文字以内" do
+  test "タイトルは120文字を超えると無効" do
     @template.title = "a" * 121
 
     assert_not @template.valid?
+    assert_not_empty @template.errors[:title]
   end
 
   test "タイトルは120文字でも有効" do
@@ -21,10 +22,11 @@ class TemplateTest < ActiveSupport::TestCase
     assert @template.valid?
   end
 
-  test "author_notesは500文字以内" do
+  test "author_notesは500文字を超えると無効" do
     @template.author_notes = "a" * 501
 
     assert_not @template.valid?
+    assert_not_empty @template.errors[:author_notes]
   end
 
   test "author_notesは500文字でも有効" do

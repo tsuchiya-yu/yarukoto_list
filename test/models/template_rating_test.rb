@@ -9,11 +9,13 @@ class TemplateRatingTest < ActiveSupport::TestCase
     assert @rating.valid?
   end
 
-  test "評価は1から5の範囲" do
-    @rating.score = 0
+  test "評価は1から5の範囲外で無効" do
+    [0, 6].each do |invalid_score|
+      @rating.score = invalid_score
 
-    assert_not @rating.valid?
-    assert_includes @rating.errors[:score], I18n.t("errors.messages.rating_score_invalid")
+      assert_not @rating.valid?, "score: #{invalid_score} should be invalid"
+      assert_includes @rating.errors[:score], I18n.t("errors.messages.rating_score_invalid")
+    end
   end
 
   test "同じユーザーとテンプレートの組み合わせは重複できない" do
