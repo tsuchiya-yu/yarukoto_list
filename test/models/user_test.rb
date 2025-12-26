@@ -4,7 +4,7 @@ class UserTest < ActiveSupport::TestCase
   test "有効なユーザーは保存できる" do
     user = User.new(
       name: "山田太郎",
-      email: "taro@example.com",
+      email: "new_taro@example.com",
       password: "password123",
       password_confirmation: "password123"
     )
@@ -15,11 +15,11 @@ class UserTest < ActiveSupport::TestCase
   test "メールアドレスは小文字に正規化される" do
     user = User.create!(
       name: "山田太郎",
-      email: "TARO@EXAMPLE.COM",
+      email: "Normalize@Example.com",
       password: "password123",
       password_confirmation: "password123"
     )
 
-    assert_equal "taro@example.com", user.reload.email
+    assert_equal "normalize@example.com", user.reload.email
   end
 end

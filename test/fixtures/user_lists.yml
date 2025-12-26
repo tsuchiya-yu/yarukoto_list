@@ -1,0 +1,15 @@
+taro_moving_list:
+  user: taro
+  template: moving
+  title: 自分用のやること
+  description: 引越し準備を進める。
+  position: 0
+  user_list_items_count: 1
+
+taro_packing_list:
+  user: taro
+  template: packing
+  title: 荷造りのやること
+  description: 荷造りを進める。
+  position: 1
+  user_list_items_count: 0
